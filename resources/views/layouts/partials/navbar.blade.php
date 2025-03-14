@@ -8,7 +8,7 @@
     </ul>
 
     <!-- SEARCH FORM -->
-    {{--
+
     <form class="form-inline ml-3">
       <div class="input-group input-group-sm">
         <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
@@ -19,14 +19,14 @@
         </div>
       </div>
     </form>
-    --}}
+
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
 
       <!-- Notifications Dropdown Menu -->
-      <!-- <li class="nav-item dropdown">
+      <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
           <span class="badge badge-warning navbar-badge">15</span>
@@ -53,10 +53,15 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li> -->
+        <div class="user-panel mt-1 pb-1 d-flex">
+            <div class="image">
+                <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
+            </div>
+        </div>
+      </li>
     </ul>
   </nav>
   <!-- /.navbar -->

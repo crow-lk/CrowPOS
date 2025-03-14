@@ -20,7 +20,7 @@
             </div>
 
             <div class="form-group">
-                <label for="app_description">{{ __('settings.App_name') }}</label>
+                <label for="app_description">{{ __('settings.App_description') }}</label>
                 <textarea name="app_description" class="form-control @error('app_description') is-invalid @enderror" id="app_description" placeholder="{{ __('settings.App_name') }}">{{ old('app_description', config('settings.app_description')) }}</textarea>
                 @error('app_description')
                 <span class="invalid-feedback" role="alert">
@@ -39,9 +39,9 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label for="warning_quantity">{{ __('settings.Currency_symbol') }}</label>
-                <input type="text" name="warning_quantity" class="form-control @error('warning_quantity') is-invalid @enderror" id="warning_quantity" placeholder="{{ __('settings.Currency_symbol') }}" value="{{ old('warning_quantity', config('settings.warning_quantity')) }}">
-                @error('warning_quantity')
+                <label for="Warning_quantity">{{ __('settings.Warning_quantity') }}</label>
+                <input type="text" name="Warning_quantity" class="form-control @error('Warning_quantity') is-invalid @enderror" id="Warning_quantity" placeholder="{{ __('settings.Warning_quantity') }}" value="{{ old('Warning_quantity', config('settings.Warning_quantity')) }}">
+                @error('Warning_quantity')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
