@@ -29,6 +29,28 @@
                 @enderror
             </div>
 
+            {{-- <div class="form-group">
+                <label for="app_logo">{{ __('settings.App_Logo') }}</label>
+                <input type="file" name="app_logo" class="form-control @error('app_logo') is-invalid @enderror" id="app_logo" accept="app_logo/*">
+                @error('app_logo')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div> --}}
+            <div class="form-group">
+                <label for="app_logo">{{ __('settings.App_Logo') }}</label>
+                <div class="custom-file">
+                    <input type="file" name="app_logo" id="app_logo">
+                </div>
+                <img id="file-preview" src="" alt="app_logo Preview" style="display:none; margin-top: 20px; width: 200px; height: auto;"></div>
+                @error('app_logo')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
+
             <div class="form-group">
                 <label for="currency_symbol">{{ __('settings.Currency_symbol') }}</label>
                 <input type="text" name="currency_symbol" class="form-control @error('currency_symbol') is-invalid @enderror" id="currency_symbol" placeholder="{{ __('settings.Currency_symbol') }}" value="{{ old('currency_symbol', config('settings.currency_symbol')) }}">
@@ -51,4 +73,21 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+    document.getElementById('image').addEventListener('change', function(event) {
+        const file = event.target.files[0]; // Get the selected file
+        if (file) {
+            const reader = new FileReader(); // Create a FileReader object
+            reader.onload = function(e) {
+                const imgPreview = document.getElementById('file-preview'); // Get the image element
+                imgPreview.src = e.target.result; // Set the src to the file's data URL
+                imgPreview.style.display = 'block'; // Show the image
+            }
+            reader.readAsDataURL(file); // Read the file as a data URL
+        }
+    });
+</script>
 @endsection

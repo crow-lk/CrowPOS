@@ -1,7 +1,7 @@
 <?php
 if (!function_exists('activeSegment')) {
-    function activeSegment($name, $segment = 2, $class = 'active')
+    function activeSegment($routeName)
     {
-        return request()->segment($segment) == $name ? $class : '';
+        return request()->routeIs($routeName);
     }
 }

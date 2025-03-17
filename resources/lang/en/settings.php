@@ -22,7 +22,8 @@ return [
     // General module messages
     //==========================================
     'Update_Settings'   => 'Update Settings',
-    'App_name'          => 'App name',
+    'App_name'          => 'App Name',
+    'App_Logo'          => 'App Logo',
     'App_description'   => 'App description',
     'Currency_symbol'   => 'Currency symbol',
     'Warning_quantity'  => 'Warning quantity',

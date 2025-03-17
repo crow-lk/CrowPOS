@@ -17,7 +17,6 @@ return [
     // Product module messages
     //==========================================
     'title' => 'Products',
-    'sure'  => 'Are you sure?',
 
     //==========================================
     // Error handling messages
@@ -50,5 +49,11 @@ return [
     'really_delete'     => 'Do you really want to delete this product?',
     'yes_delete'        => 'Yes, delete it!',
     'No'                => 'No',
+    'Product_Type'      => 'Product Type',
+    'Category'          => 'Category',
+    'Brand'             => 'Brand',
+    'Select_Product_Type'      => 'Select Product Type',
+    'Select_Category'          => 'Select Category',
+    'Select_Brand'             => 'Select Brand',
 
 ];

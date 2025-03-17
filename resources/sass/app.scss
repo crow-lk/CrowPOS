@@ -1,14 +1,15 @@
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Nunito");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 // Variables
 @import "variables";
 
 // Font Awesome
-$fa-font-path: "@fortawesome/fontawesome-free/webfonts";
+$fa-font-path: "@fortawesome/fontawesome-free/webfonts"; // Correct path for Laravel Mix
 @import "@fortawesome/fontawesome-free/scss/fontawesome";
 @import "@fortawesome/fontawesome-free/scss/brands";
 @import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/regular";
 
 // SweetAlert2
 @import "sweetalert2/dist/sweetalert2.min.css";
@@ -21,6 +22,14 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 
 // DataTables
 @import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
+
+// Custom Styles
+body {
+    font-family: $font-family-sans-serif;
+    background-color: $body-bg;
+    color: $black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 .user-cart {
     .card {
@@ -39,11 +48,13 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
         border-radius: 3px;
         background: #fff;
         margin: 0 2px 4px 2px;
+
         img {
             width: 100px;
             height: 100px;
             max-width: 100%;
         }
+
         h5 {
             font-size: 13px;
             text-align: center;
@@ -57,20 +68,23 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
         max-height: 70px;
     }
 }
+
 // Dark Mode Styles
 body.dark-mode {
     background-color: $dark-bg;
     color: $dark-text;
 
+    // Navbar
     .navbar {
         background-color: $dark-navbar;
         color: $dark-text;
+
+        .nav-link {
+            color: $dark-text;
+        }
     }
 
-    .nav-link {
-        color: $dark-text;
-    }
-
+    // Form Controls
     .form-control-navbar {
         background-color: $dark-input;
         color: $dark-text;
@@ -81,17 +95,158 @@ body.dark-mode {
         color: $dark-text;
     }
 
+    // Dropdown Menu
     .dropdown-menu {
         background-color: $dark-navbar;
         color: $dark-text;
+
+        .dropdown-item {
+            color: $dark-text;
+
+            &:hover {
+                background-color: $dark-hover;
+            }
+        }
     }
 
-    .dropdown-item {
-        color: $dark-text;
+    // Theme Toggle Button Icon
+    .theme-toggle-btn i {
+        color: $dark-text !important;
+    }
+}
+
+// Light Mode Styles
+body:not(.dark-mode) {
+    // Navbar
+    .navbar {
+        background-color: $light-navbar;
+        color: $light-text;
+
+        .nav-link {
+            color: $light-text;
+        }
     }
 
-    .dropdown-item:hover {
-        background-color: $dark-hover;
+    // Form Controls
+    .form-control-navbar {
+        background-color: $light-input;
+        color: $light-text;
+    }
+
+    .btn-navbar {
+        background-color: $light-navbar;
+        color: $light-text;
+    }
+
+    // Dropdown Menu
+    .dropdown-menu {
+        background-color: $light-navbar;
+        color: $light-text;
+
+        .dropdown-item {
+            color: $light-text;
+
+            &:hover {
+                background-color: $light-hover;
+            }
+        }
+    }
+
+    // Theme Toggle Button Icon
+    .theme-toggle-btn i {
+        color: $light-text !important;
+    }
+}
+
+// Bell Icon and Notification Badge
+.nav-link .fas.fa-bell {
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: inherit !important;
+}
+
+.icon-with-badge {
+    position: relative; // Establishes a positioning context
+    display: inline-block; // Ensures proper alignment
+}
+
+.icon-with-badge .badge {
+    position: absolute !important; // Positions the badge relative to the parent
+    top: -10px !important; // Moves the badge upward
+    right: -10px !important; // Moves the badge to the right
+    font-size: 12px; // Adjusts the badge size
+    padding: 5px 8px; // Adds padding for better visibility
+    border-radius: 50%; // Makes the badge circular
+    z-index: 10; // Ensures the badge appears above other elements
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Light Mode Badge
+body:not(.dark-mode) .icon-with-badge .badge {
+    background-color: #ff0707 !important; // Red background for light mode
+    color: #fff !important; // White text for better contrast
+}
+
+// Dark Mode Badge
+body.dark-mode .icon-with-badge .badge {
+    background-color: #ffc107 !important; // Yellow background for dark mode
+    color: #000 !important; // Black text for better contrast
+}
+
+// Sidebar Styles
+.main-sidebar {
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &.sidebar-dark-primary {
+        background-color: $sidebar-dark-bg !important;
+        color: $sidebar-dark-text !important;
+
+        .nav-link {
+            color: $sidebar-dark-text !important;
+
+            &:hover {
+                background-color: $dark-hover !important;
+            }
+        }
+
+        .brand-link {
+            color: $sidebar-dark-text !important;
+
+            img {
+                filter: brightness(0) invert(1) !important; // Ensure logo visibility
+            }
+        }
+    }
+
+    &.sidebar-light-primary {
+        background-color: $sidebar-light-bg !important;
+        color: $sidebar-light-text !important;
+
+        .nav-link {
+            color: $sidebar-light-text !important;
+
+            &:hover {
+                background-color: #f0f0f0 !important;
+            }
+        }
+
+        .brand-link {
+            color: $sidebar-light-text !important;
+
+            img {
+                filter: none !important; // Reset logo filter
+            }
+        }
+    }
+}
+
+// Dark Mode Sidebar
+body.dark-mode .main-sidebar {
+    &.sidebar-light-primary {
+        @extend .sidebar-dark-primary;
     }
 }
 
@@ -103,20 +258,14 @@ body.dark-mode {
     font-size: 1.5rem;
     color: $blue;
     padding: 10px;
-    transition: color 0.3s ease; // Smooth transition
 
     &:hover,
     &:focus {
-        color: #007bff;
-        outline: 2px solid #007bff; // Accessibility for keyboard navigation
+        color: lighten($blue, 10%);
+        outline: 2px solid $blue;
     }
-}
 
-// Utility Classes (Optional - Remove if using Bootstrap)
-.d-none {
-    display: none;
-}
-
-.d-inline {
-    display: inline;
+    i {
+        color: $blue;
+    }
 }

@@ -16,3 +16,9 @@ import "./components/Cart";
 import ThemeToggle from "./components/ThemeToggle";
 
 import "./components/Purchase"
+
+// Import Chart.js
+import { Chart } from 'chart.js';
+
+// Optionally, register additional plugins if needed
+import 'chartjs-adapter-date-fns'; // If you want to use date formatting
