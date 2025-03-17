@@ -23,7 +23,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="product_type_id">{{ __('brand.Product_Type') }}</label>
                 <select name="product_type_id" id="product_type_id" class="form-control @error('product_type_id') is-invalid @enderror">
                     <option value="">{{ __('brand.Select_ProductType') }}</option>
@@ -38,7 +38,7 @@
                     <strong>{{ $message }}</strong>
                 </span>
                 @enderror
-            </div>
+            </div> --}}
 
             <button class="btn btn-primary" type="submit">{{ __('common.Create') }}</button>
         </form>
