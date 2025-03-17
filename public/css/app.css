@@ -17110,3 +17110,82 @@ a.text-dark:focus {
   max-height: 70px;
 }
 
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: black !important;
+    color: white !important;
+}
+
+/* Navbar */
+body.dark-mode .navbar {
+    background-color: black !important;
+    color: white !important;
+    border-bottom: 1px solid #444; /* Adds subtle separation */
+}
+
+/* Navbar links */
+body.dark-mode .nav-link {
+    color: white !important;
+}
+
+/* Search Input */
+body.dark-mode .form-control-navbar {
+    background-color: #222 !important;
+    color: white !important;
+    border: 1px solid #555 !important;
+}
+
+/* Search button */
+body.dark-mode .btn-navbar {
+    background-color: black !important;
+    color: white !important;
+    border: 1px solid #555 !important;
+}
+
+/* Dropdown menu */
+body.dark-mode .dropdown-menu {
+    background-color: #1e1e1e !important;
+    color: white !important;
+    border: 1px solid #444 !important;
+}
+
+/* Dropdown items */
+body.dark-mode .dropdown-item {
+    color: white !important;
+}
+
+/* Hover effect for dropdown */
+body.dark-mode .dropdown-item:hover {
+    background-color: #444 !important;
+}
+
+/* Card elements (if applicable) */
+body.dark-mode .card {
+    background-color: #121212 !important;
+    color: white !important;
+    border: 1px solid #333 !important;
+}
+
+/* Buttons */
+body.dark-mode .btn {
+    background-color: #333 !important;
+    color: white !important;
+}
+
+/* Table Styling */
+body.dark-mode table {
+    background-color: #222 !important;
+    color: white !important;
+}
+
+body.dark-mode thead {
+    background-color: #444 !important;
+}
+
+body.dark-mode tbody tr {
+    background-color: #222 !important;
+}
+
+body.dark-mode tbody tr:hover {
+    background-color: #333 !important;
+}

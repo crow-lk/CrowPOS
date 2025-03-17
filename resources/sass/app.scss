@@ -57,3 +57,66 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
         max-height: 70px;
     }
 }
+// Dark Mode Styles
+body.dark-mode {
+    background-color: $dark-bg;
+    color: $dark-text;
+
+    .navbar {
+        background-color: $dark-navbar;
+        color: $dark-text;
+    }
+
+    .nav-link {
+        color: $dark-text;
+    }
+
+    .form-control-navbar {
+        background-color: $dark-input;
+        color: $dark-text;
+    }
+
+    .btn-navbar {
+        background-color: $dark-navbar;
+        color: $dark-text;
+    }
+
+    .dropdown-menu {
+        background-color: $dark-navbar;
+        color: $dark-text;
+    }
+
+    .dropdown-item {
+        color: $dark-text;
+    }
+
+    .dropdown-item:hover {
+        background-color: $dark-hover;
+    }
+}
+
+// Theme Toggle Button
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: $blue;
+    padding: 10px;
+    transition: color 0.3s ease; // Smooth transition
+
+    &:hover,
+    &:focus {
+        color: #007bff;
+        outline: 2px solid #007bff; // Accessibility for keyboard navigation
+    }
+}
+
+// Utility Classes (Optional - Remove if using Bootstrap)
+.d-none {
+    display: none;
+}
+
+.d-inline {
+    display: inline;
+}

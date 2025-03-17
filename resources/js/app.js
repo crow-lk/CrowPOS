@@ -13,5 +13,6 @@ import "./bootstrap";
  */
 
 import "./components/Cart";
+import ThemeToggle from "./components/ThemeToggle";
 
 import "./components/Purchase"
