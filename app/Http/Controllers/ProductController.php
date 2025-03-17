@@ -42,7 +42,7 @@ class ProductController extends Controller
         $categories = Category::all();
         $productTypes = ProductType::all();
         $brands = Brand::all();
-        return view('products.create', compact('categories','productTypes','brands'));
+        return view('products.create', compact('categories','productTypes', 'brands'));
     }
 
     /**
@@ -100,7 +100,7 @@ class ProductController extends Controller
         $categories = Category::all();
         $productTypes = ProductType::all();
         $brands = Brand::all();
-        return view('products.create', compact('categories','productTypes','brands'));
+        return view('products.create', compact('categories','productTypes', 'brands'));
     }
 
     /**

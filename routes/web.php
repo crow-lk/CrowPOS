@@ -26,8 +26,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     Route::resource('products', ProductController::class);
-    Route::get('/product-types/{categoryId}', [ProductController::class, 'getProductTypes']);
-    Route::get('/brands/{productTypeId}', [ProductController::class, 'getBrands']);
     Route::resource('categories', CategoryController::class);
     Route::resource('productTypes', ProductTypeController::class);
     Route::resource('brands', BrandController::class);

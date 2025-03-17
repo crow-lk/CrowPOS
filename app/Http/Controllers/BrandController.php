@@ -31,8 +31,8 @@ class BrandController extends Controller
      */
     public function create()
     {
-        // $productTypes = ProductType::all(); // Fetch all productTypes
-    return view('brands.create', compact('productTypes'));
+        $productTypes = ProductType::all(); // Fetch all productTypes
+        return view('brands.create', compact('productTypes'));
     }
 
     /**
