@@ -45,5 +45,6 @@ return [
     'No'                => 'No',
     'Category'                => 'Category',
     'Select_Category'         => 'Select Category',
+    'Create_ProductType' => 'Create Product Type',
 
 ];

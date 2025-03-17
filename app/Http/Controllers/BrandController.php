@@ -18,9 +18,11 @@ class BrandController extends Controller
     public function index()
     {
         if (request()->wantsJson()) {
-            return response(Brand::with('productType')->get()); // Eager load productTypes
+            return response(
+                Brand::all()
+            );
         }
-        $brands = Brand::with('productType')->latest()->paginate(10);
+        $brands = Brand::latest()->paginate(10);
         return view('brands.index')->with('brands', $brands);
     }
 
@@ -31,8 +33,8 @@ class BrandController extends Controller
      */
     public function create()
     {
-        $productTypes = ProductType::all(); // Fetch all productTypes
-    return view('brands.create', compact('productTypes'));
+        // $productTypes = ProductType::all(); // Fetch all productTypes
+        return view('brands.create', );
     }
 
     /**
@@ -44,7 +46,6 @@ class BrandController extends Controller
     public function store(BrandStoreRequest $request)
     {
         $brand = Brand::create([
-            'product_type_id' => $request->product_type_id,
             'name' => $request->name,
         ]);
 
@@ -70,8 +71,8 @@ class BrandController extends Controller
      */
     public function edit(brand $brand)
     {
-        $productTypes = ProductType::all(); // Fetch all productTypes
-        return view('brands.edit', compact('brand', 'productTypes'));
+        // $productTypes = ProductType::all(); // Fetch all productTypes
+        return view('brands.edit',compact('brand'));
     }
 
     /**
@@ -83,7 +84,7 @@ class BrandController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
-        $brand->product_type_id = $request->product_type_id;
+        // $brand->product_type_id = $request->product_type_id;
         $brand->name = $request->name;
 
         if (!$brand->save()) {

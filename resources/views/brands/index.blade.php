@@ -16,7 +16,6 @@
                 <tr>
                     <th>{{ __('brand.ID') }}</th>
                     <th>{{ __('brand.Name') }}</th>
-                    <th>{{ __('brand.ProductType_Name') }}</th>
                     <th>{{ __('common.Created_At') }}</th>
                     <th>{{ __('brand.Actions') }}</th>
                 </tr>
@@ -26,7 +25,6 @@
                 <tr>
                     <td>{{$brand->id}}</td>
                     <td>{{$brand->name}}</td>
-                    <td>{{$brand->productType->name}}</td>
                     <td>{{$brand->created_at}}</td>
                     <td>
                         <a href="{{ route('brands.edit', $brand) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>

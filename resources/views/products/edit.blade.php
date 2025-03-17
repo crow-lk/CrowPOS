@@ -41,7 +41,7 @@
                 <select name="category_id" id="category_id" class="form-control @error('category_id') is-invalid @enderror">
                     <option value="">{{ __('product.Select_Category') }}</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -58,7 +58,8 @@
                 <select name="product_type_id" id="product_type_id" class="form-control @error('product_type_id') is-invalid @enderror">
                     <option value="">{{ __('product.Select_Product_Type') }}</option>
                     @foreach($productTypes as $productType)
-                        <option value="{{ $productType->id }}" {{ old('product_type_id') == $productType->id ? 'selected' : '' }}>
+                    <option value="{{ $productType->id }}" {{ old('product_type_id', $product->product_type_id) == $productType->id ? 'selected' : '' }}>
+
                             {{ $productType->name }}
                         </option>
                     @endforeach
@@ -75,7 +76,7 @@
                 <select name="brand_id" id="brand_id" class="form-control @error('brand_id') is-invalid @enderror">
                     <option value="">{{ __('product.Select_Brand') }}</option>
                     @foreach($brands as $brand)
-                        <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                    <option value="{{ $brand->id }}" {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
                             {{ $brand->name }}
                         </option>
                     @endforeach

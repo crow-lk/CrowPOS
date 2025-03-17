@@ -42,5 +42,6 @@ return [
     'Really_Delete'     => 'Do you really want to delete this product?',
     'Yes_Delete'        => 'Yes, delete it!',
     'No'                => 'No',
+    'Create_Category'   => 'Create Category',
 
 ];

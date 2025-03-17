@@ -24,7 +24,7 @@ class BrandStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_type_id' => 'nullable|integer|exists:product_types,id',
+            // 'product_type_id' => 'nullable|integer|exists:product_types,id',
             'name' => 'required|string|max:20',
         ];
     }
