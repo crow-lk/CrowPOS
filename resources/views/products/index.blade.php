@@ -64,16 +64,16 @@
                     confirmButton: 'btn btn-success',
                     cancelButton: 'btn btn-danger'
                 },
-                buttonsStyling: false
+                buttonsStyling: false,
             })
 
             swalWithBootstrapButtons.fire({
-                title: '{{ __('product.sure ') }}', // Wrap in quotes
-                text: '{{ __('product.really_delete ') }}', // Wrap in quotes
+                title: '{{ __('product.sure') }}', // Wrap in quotes
+                text: '{{ __('product.really_delete') }}', // Wrap in quotes
                 icon: 'warning', // Fix the icon string
                 showCancelButton: true,
-                confirmButtonText: '{{ __('product.yes_delete ') }}', // Wrap in quotes
-                cancelButtonText: '{{ __('product.No ') }}', // Wrap in quotes
+                confirmButtonText: '{{ __('product.yes_delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('product.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {

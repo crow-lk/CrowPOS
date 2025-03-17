@@ -1,9 +1,8 @@
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-light-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{{route('home')}}" class="brand-link">
-        <img src="{{ asset('images/crowlogo.png') }}" alt="AdminLTE Logo" class="brand-image elevation-3"
-             style="opacity: .8">
+        <img src="{{ asset('images/' . ($settings['app_logo'] ?? 'crowlogo.png')) }}" alt="AdminLTE Logo" style="height:60px; width: auto; margin-right: 10px; margin-left: 5px;">
         <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
     </a>
 
@@ -20,15 +19,44 @@
                         <p>{{ __('dashboard.title') }}</p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('products.index') }}" class="nav-link {{ activeSegment('products') }}">
-                        <i class="nav-icon fas fa-th-large"></i>
-                        <p>{{ __('product.title') }}</p>
+                <li class="nav-item has-treeview {{ activeSegment('products.index') || activeSegment('categories.index') || activeSegment('productTypes.index') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-cubes"></i>
+                        <p>
+                            {{ __('product.title') }}
+                            <i class="right fas fa-angle-left"></i> <!-- This icon indicates a dropdown -->
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview"> <!-- Initially hidden -->
+                        <li class="nav-item">
+                            <a href="{{ route('products.index') }}" class="nav-link {{ activeSegment('products.index') }}">
+                                <i class="nav-icon fas fa-cubes"></i>
+                                <p>{{ __('product.title') }}</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('categories.index') }}" class="nav-link {{ activeSegment('categories.index') }}">
+                                <i class="nav-icon fas fa-tasks"></i>
+                                <p>{{ __('category.title') }}</p> <!-- Assuming you have a translation for index -->
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('productTypes.index') }}" class="nav-link {{ activeSegment('productTypes.index') }}">
+                                <i class="nav-icon fas fa-inbox"></i>
+                                <p>{{ __('productType.title') }}</p> <!-- Assuming you have a translation for index -->
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('brands.index') }}" class="nav-link {{ activeSegment('brands.index') }}">
+                                <i class="nav-icon fas fa-tags"></i>
+                                <p>{{ __('brand.title') }}</p> <!-- Assuming you have a translation for index -->
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('services.index') }}" class="nav-link {{ activeSegment('services') }}">
-                        <i class="nav-icon fas fa-th-large"></i>
+                        <i class="nav-icon fas fa-clone"></i>
                         <p>{{ __('service.title') }}</p>
                     </a>
                 </li>
@@ -47,7 +75,7 @@
                 </li>--}}
                 <li class="nav-item has-treeview">
                     <a href="{{ route('orders.index') }}" class="nav-link {{ activeSegment('orders') }}">
-                        <i class="nav-icon fas fa-cart-plus"></i>
+                        <i class="nav-icon fas fa-shopping-bag"></i>
                         <p>{{ __('order.title') }}</p>
                     </a>
                 </li>
@@ -59,7 +87,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('suppliers.index') }}" class="nav-link {{ activeSegment('supplier') }}">
-                        <i class="nav-icon fas fa-users"></i>
+                        <i class="nav-icon fas fa-industry"></i>
                         <p>{{ __('Supplier') }}</p>
                     </a>
                 </li>
@@ -67,15 +95,6 @@
                     <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>{{ __('settings.title') }}</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>{{ __('common.Logout') }}</p>
-                        <form action="{{route('logout')}}" method="POST" id="logout-form">
-                            @csrf
-                        </form>
                     </a>
                 </li>
             </ul>

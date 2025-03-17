@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,7 +39,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $categories = Category::all();
+        $productTypes = ProductType::all();
+        $brands = Brand::all();
+        return view('products.create', compact('categories','productTypes','brands'));
     }
 
     /**
@@ -56,6 +62,9 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
+            'category_id' => $request->category_id,
+            'product_type_id' => $request->product_type_id,
+            'brand_id' => $request->brand_id,
             'image' => $image_path,
             'barcode' => $request->barcode,
             'price' => $request->price,
@@ -88,7 +97,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit')->with('product', $product);
+        $categories = Category::all();
+        $productTypes = ProductType::all();
+        $brands = Brand::all();
+        return view('products.create', compact('categories','productTypes','brands'));
     }
 
     /**
@@ -102,6 +114,9 @@ class ProductController extends Controller
     {
         $product->name = $request->name;
         $product->description = $request->description;
+        $product->category_id = $request->category_id;
+        $product->product_type_id = $request->product_type_id;
+        $product->brand_id = $request->brand_id;
         $product->barcode = $request->barcode;
         $product->price = $request->price;
         $product->quantity = $request->quantity;

@@ -10,7 +10,10 @@
 @endsection
 
 @section('content')
-<p class="login-box-msg">Sign in to start your session</p>
+<div class="login-logo">
+    <img src="{{ asset('images/' . ($settings['app_logo'] ?? 'crowlogo.png')) }}" alt="AdminLTE Logo" style="height:120px; width: auto; ">
+</div>
+<p class="login-box-msg">Sign In</p>
 
 <form action="{{ route('login') }}" method="post">
     @csrf

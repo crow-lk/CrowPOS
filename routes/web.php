@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SettingController;
@@ -23,6 +26,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     Route::resource('products', ProductController::class);
+    Route::get('/product-types/{categoryId}', [ProductController::class, 'getProductTypes']);
+    Route::get('/brands/{productTypeId}', [ProductController::class, 'getBrands']);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('productTypes', ProductTypeController::class);
+    Route::resource('brands', BrandController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('orders', OrderController::class);

@@ -9,7 +9,7 @@
 
     <!-- SEARCH FORM -->
 
-    <form class="form-inline ml-3">
+    {{-- <form class="form-inline ml-3">
       <div class="input-group input-group-sm">
         <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
         <div class="input-group-append">
@@ -18,7 +18,7 @@
           </button>
         </div>
       </div>
-    </form>
+    </form> --}}
 
 
     <!-- Right navbar links -->
@@ -28,38 +28,37 @@
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+            <div class="user-panel pb-2 d-flex">
+                <div class="image">
+                    <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
+                </div>
+                <div class="info">
+                    {{ auth()->user()->getFullname() }}
+                </div>
+            </div>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">{{ __('common.Notifications', ['total' => 15]) }}</span>
+          <span class="p-5">PROFILE</span>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> {{ __('common.new_messages', ['total_msg' => 4]) }}
-            <span class="float-right text-muted text-sm">{{ __('common.no_mins', ['mins' => 3]) }}</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> {{ __('common.total_friend_request', ['total' => 8]) }}
-            <span class="float-right text-muted text-sm">{{ __('common.no_hours', ['hours' => 12]) }}</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> {{ __('common.total_new_reports', ['total' => 3]) }}
-            <span class="float-right text-muted text-sm">{{ __('common.no_days', ['days' => 2]) }}</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">{{ __('common.see_all') }}</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <div class="user-panel mt-1 pb-1 d-flex">
+          <div class="user-panel pb-2 pt-2 d-flex">
             <div class="image">
-                <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-1" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
+                {{ auth()->user()->getFullname() }}
             </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="user-panel pb-2 d-flex">
+            <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
+                <div class="info">
+                    <p><i class="nav-icon fas fa-sign-out-alt"></i>{{ __('common.Logout') }}</p>
+                    <form action="{{route('logout')}}" method="POST" id="logout-form">
+                        @csrf
+                    </form>
+                </div>
+            </a>
+          </div>
         </div>
       </li>
     </ul>

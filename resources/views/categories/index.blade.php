@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', __('service.Service_List'))
-@section('content-header', __('service.Service_List'))
+@section('title', __('category.Category_List'))
+@section('content-header', __('category.Category_List'))
 @section('content-actions')
-<a href="{{route('services.create')}}" class="btn btn-primary">{{ __('service.Create_Service') }}</a>
+<a href="{{route('categories.create')}}" class="btn btn-primary">{{ __('category.Add_Category') }}</a>
 @endsection
 @section('css')
 <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
@@ -14,29 +14,27 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ __('service.ID') }}</th>
-                    <th>{{ __('service.Name') }}</th>
-                    <th>{{ __('service.Created_At') }}</th>
-                    <th>{{ __('service.Updated_At') }}</th>
-                    <th>{{ __('service.Actions') }}</th>
+                    <th>{{ __('category.ID') }}</th>
+                    <th>{{ __('category.Name') }}</th>
+                    <th>{{ __('common.Created_At') }}</th>
+                    <th>{{ __('category.Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($services as $service)
+                @foreach ($categories as $category)
                 <tr>
-                    <td>{{$service->id}}</td>
-                    <td>{{$service->name}}</td>
-                    <td>{{$service->created_at}}</td>
-                    <td>{{$service->updated_at}}</td>
+                    <td>{{$category->id}}</td>
+                    <td>{{$category->name}}</td>
+                    <td>{{$category->created_at}}</td>
                     <td>
-                        <a href="{{ route('services.edit', $service) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-danger btn-delete" data-url="{{route('services.destroy', $service)}}"><i class="fas fa-trash"></i></button>
+                        <a href="{{ route('categories.edit', $category) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-danger btn-delete" data-url="{{route('categories.destroy', $category)}}"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-        {{ $services->render() }}
+        {{ $categories->render() }}
     </div>
 </div>
 @endsection
@@ -53,15 +51,15 @@
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
-            })
+            });
 
             swalWithBootstrapButtons.fire({
-                title: '{{ __('service.sure') }}', // Wrap in quotes
-                text: '{{ __('service.really_delete') }}', // Wrap in quotes
-                icon: 'warning', // Fix the icon string
+                title: '{{ __('category.Sure') }}', // Wrap in quotes
+                text: '{{ __('category.Really_Delete') }}', // Wrap in quotes
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '{{ __('service.yes_delete') }}', // Wrap in quotes
-                cancelButtonText: '{{ __('service.No') }}', // Wrap in quotes
+                confirmButtonText: '{{ __('category.Yes_Delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('category.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {

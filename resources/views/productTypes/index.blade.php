@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', __('service.Service_List'))
-@section('content-header', __('service.Service_List'))
+@section('title', __('productType.ProductType_List'))
+@section('content-header', __('productType.ProductType_List'))
 @section('content-actions')
-<a href="{{route('services.create')}}" class="btn btn-primary">{{ __('service.Create_Service') }}</a>
+<a href="{{route('productTypes.create')}}" class="btn btn-primary">{{ __('productType.Add_ProductType') }}</a>
 @endsection
 @section('css')
 <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
@@ -14,29 +14,29 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ __('service.ID') }}</th>
-                    <th>{{ __('service.Name') }}</th>
-                    <th>{{ __('service.Created_At') }}</th>
-                    <th>{{ __('service.Updated_At') }}</th>
-                    <th>{{ __('service.Actions') }}</th>
+                    <th>{{ __('productType.ID') }}</th>
+                    <th>{{ __('productType.Name') }}</th>
+                    <th>{{ __('productType.Category_Name') }}</th>
+                    <th>{{ __('common.Created_At') }}</th>
+                    <th>{{ __('productType.Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($services as $service)
+                @foreach ($productTypes as $productType)
                 <tr>
-                    <td>{{$service->id}}</td>
-                    <td>{{$service->name}}</td>
-                    <td>{{$service->created_at}}</td>
-                    <td>{{$service->updated_at}}</td>
+                    <td>{{$productType->id}}</td>
+                    <td>{{$productType->name}}</td>
+                    <td>{{$productType->category->name}}</td>
+                    <td>{{$productType->created_at}}</td>
                     <td>
-                        <a href="{{ route('services.edit', $service) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-danger btn-delete" data-url="{{route('services.destroy', $service)}}"><i class="fas fa-trash"></i></button>
+                        <a href="{{ route('productTypes.edit', $productType) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-danger btn-delete" data-url="{{route('productTypes.destroy', $productType)}}"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-        {{ $services->render() }}
+        {{ $productTypes->render() }}
     </div>
 </div>
 @endsection
@@ -53,15 +53,15 @@
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
-            })
+            });
 
             swalWithBootstrapButtons.fire({
-                title: '{{ __('service.sure') }}', // Wrap in quotes
-                text: '{{ __('service.really_delete') }}', // Wrap in quotes
-                icon: 'warning', // Fix the icon string
+                title: '{{ __('productType.Sure') }}', // Wrap in quotes
+                text: '{{ __('productType.Really_Delete') }}', // Wrap in quotes
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '{{ __('service.yes_delete') }}', // Wrap in quotes
-                cancelButtonText: '{{ __('service.No') }}', // Wrap in quotes
+                confirmButtonText: '{{ __('productType.Yes_Delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('productType.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {

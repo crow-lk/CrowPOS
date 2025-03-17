@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', __('service.Service_List'))
-@section('content-header', __('service.Service_List'))
+@section('title', __('brand.Brand_List'))
+@section('content-header', __('brand.Brand_List'))
 @section('content-actions')
-<a href="{{route('services.create')}}" class="btn btn-primary">{{ __('service.Create_Service') }}</a>
+<a href="{{route('brands.create')}}" class="btn btn-primary">{{ __('brand.Add_Brand') }}</a>
 @endsection
 @section('css')
 <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
@@ -14,29 +14,29 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ __('service.ID') }}</th>
-                    <th>{{ __('service.Name') }}</th>
-                    <th>{{ __('service.Created_At') }}</th>
-                    <th>{{ __('service.Updated_At') }}</th>
-                    <th>{{ __('service.Actions') }}</th>
+                    <th>{{ __('brand.ID') }}</th>
+                    <th>{{ __('brand.Name') }}</th>
+                    <th>{{ __('brand.ProductType_Name') }}</th>
+                    <th>{{ __('common.Created_At') }}</th>
+                    <th>{{ __('brand.Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($services as $service)
+                @foreach ($brands as $brand)
                 <tr>
-                    <td>{{$service->id}}</td>
-                    <td>{{$service->name}}</td>
-                    <td>{{$service->created_at}}</td>
-                    <td>{{$service->updated_at}}</td>
+                    <td>{{$brand->id}}</td>
+                    <td>{{$brand->name}}</td>
+                    <td>{{$brand->productType->name}}</td>
+                    <td>{{$brand->created_at}}</td>
                     <td>
-                        <a href="{{ route('services.edit', $service) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-danger btn-delete" data-url="{{route('services.destroy', $service)}}"><i class="fas fa-trash"></i></button>
+                        <a href="{{ route('brands.edit', $brand) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-danger btn-delete" data-url="{{route('brands.destroy', $brand)}}"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-        {{ $services->render() }}
+        {{ $brands->render() }}
     </div>
 </div>
 @endsection
@@ -53,15 +53,15 @@
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
-            })
+            });
 
             swalWithBootstrapButtons.fire({
-                title: '{{ __('service.sure') }}', // Wrap in quotes
-                text: '{{ __('service.really_delete') }}', // Wrap in quotes
-                icon: 'warning', // Fix the icon string
+                title: '{{ __('brand.Sure') }}', // Wrap in quotes
+                text: '{{ __('brand.Really_Delete') }}', // Wrap in quotes
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '{{ __('service.yes_delete') }}', // Wrap in quotes
-                cancelButtonText: '{{ __('service.No') }}', // Wrap in quotes
+                confirmButtonText: '{{ __('brand.Yes_Delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('brand.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
