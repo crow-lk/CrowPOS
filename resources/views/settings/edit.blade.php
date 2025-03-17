@@ -43,7 +43,6 @@
                 <div class="custom-file">
                     <input type="file" name="app_logo" id="app_logo">
                 </div>
-                <img id="file-preview" src="" alt="app_logo Preview" style="display:none; margin-top: 20px; width: 200px; height: auto;"></div>
                 @error('app_logo')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -76,18 +75,4 @@
 @endsection
 
 @section('js')
-<script>
-    document.getElementById('image').addEventListener('change', function(event) {
-        const file = event.target.files[0]; // Get the selected file
-        if (file) {
-            const reader = new FileReader(); // Create a FileReader object
-            reader.onload = function(e) {
-                const imgPreview = document.getElementById('file-preview'); // Get the image element
-                imgPreview.src = e.target.result; // Set the src to the file's data URL
-                imgPreview.style.display = 'block'; // Show the image
-            }
-            reader.readAsDataURL(file); // Read the file as a data URL
-        }
-    });
-</script>
 @endsection
