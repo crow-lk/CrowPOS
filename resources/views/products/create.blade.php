@@ -91,7 +91,6 @@
                     <input type="file" class="custom-file-input" name="image" id="image">
                     <label class="custom-file-label" for="image">{{ __('product.Choose_file') }}</label>
                 </div>
-             
                 @error('image')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -153,5 +152,35 @@
 
 @section('js')
 <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#category_id').change(function() {
+            var categoryId = $(this).val();
+            $('#product_type_id').empty().append('<option value="">{{ __('product.Select_Product_Type') }}</option>').prop('disabled', true);
 
+            if (categoryId) {
+                $.ajax({
+                    url: '/product-types/' + categoryId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            $.each(data, function(index, productType) {
+                                $('#product_type_id').append('<option value="' + productType.id + '">' + productType.name + '</option>');
+                            });
+                            $('#product_type_id').prop('disabled', false); // Enable the dropdown
+                        } else {
+                            $('#product_type_id').prop('disabled', true); // Disable if no product types found
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText); // Log any errors
+                    }
+                });
+            } else {
+                $('#product_type_id').prop('disabled', true); // Disable if no category is selected
+            }
+        });
+    });
+</script> --}}
 @endsection
