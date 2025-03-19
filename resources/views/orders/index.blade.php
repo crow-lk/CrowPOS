@@ -47,10 +47,10 @@
         <tbody>
             @foreach ($orders as $order)
             <tr class="transition" style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
-                <td class="text-center fw-bold px-4 py-3 text-primary">{{$order->id}}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{$order->getCustomerName()}}</td>
-                <td class="text-center px-4 py-3 text-muted">{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
-                <td class="text-center px-4 py-3 text-muted">{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>
+                <td class="text-center fw-bold px-4 py-3 ">{{$order->id}}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{$order->getCustomerName()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>
                 <td class="text-center px-4 py-3">
                     @if($order->receivedAmount() == 0)
                         <span class="badge badge-danger">{{ __('order.Not_Paid') }}</span>
@@ -63,7 +63,7 @@
                     @endif
                 </td>
                 <td class="text-center px-4 py-3">{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
-                <td class="text-center px-4 py-3">{{$order->created_at}}</td>
+                <td class="text-center px-4 py-3 text-muted">{{$order->created_at}}</td>
                 <td class="text-center px-4 py-3">
                     <button class="btn btn-sm btn-secondary btnShowInvoice" data-toggle="modal"
                         data-target="#modalInvoice"

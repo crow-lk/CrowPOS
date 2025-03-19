@@ -31,9 +31,9 @@
             @foreach ($productTypes as $productType)
             <tr class="transition"
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
-                <td class="text-center fw-bold px-4 py-3 text-primary">{{ $productType->id }}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{ $productType->name }}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{ $productType->category->name }}</td>
+                <td class="text-center fw-bold px-4 py-3 ">{{ $productType->id }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $productType->name }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $productType->category->name }}</td>
                 <td class="text-center px-4 py-3 text-muted">{{ $productType->created_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3">
     <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">

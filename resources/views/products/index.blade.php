@@ -37,13 +37,13 @@
             <tr class="transition"
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
                 
-                <td class="text-center fw-bold px-4 py-3 text-primary">{{ $product->id }}</td>
-                <td class="text-start fw-bold px-4 py-3 text-secondary text-muted">{{ $product->name }}</td>
+                <td class="text-center px-4 py-3">{{ $product->id }}</td>
+                <td class="text-center px-4 py-3">{{ $product->name }}</td>
                 <td class="text-center px-4 py-3">
                     <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
                 </td>
-                <td class="text-center px-4 py-3 text-muted">{{ $product->barcode }}</td>
-                <td class="text-center px-4 py-3 fw-bold text-success">{{ number_format($product->price, 2) }}</td>
+                <td class="text-center px-4 py-3">{{ $product->barcode }}</td>
+                <td class="text-center px-4 py-3">{{ number_format($product->price, 2) }}</td>
                 <td class="text-center px-4 py-3">{{ $product->quantity }}</td>
                 <td class="text-center px-4 py-3">
                     <span class="badge badge-{{ $product->status ? 'success' : 'danger' }}">

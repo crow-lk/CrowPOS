@@ -34,12 +34,12 @@
             @foreach ($suppliers as $supplier)
             <tr class="transition"
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
-                <td class="text-center fw-bold px-4 py-3 text-primary">{{ $supplier->id }}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{ $supplier->first_name }}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{ $supplier->last_name }}</td>
-                <td class="text-start px-4 py-3 text-muted">{{ $supplier->email }}</td>
-                <td class="text-start px-4 py-3 text-muted">{{ $supplier->phone }}</td>
-                <td class="text-start px-4 py-3 text-muted">{{ $supplier->address }}</td>
+                <td class="text-center fw-bold px-4 py-3 ">{{ $supplier->id }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $supplier->first_name }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $supplier->last_name }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->email }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->phone }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->address }}</td>
                 <td class="text-center px-4 py-3 text-muted">{{ $supplier->created_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3">
                     <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">

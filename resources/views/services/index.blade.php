@@ -31,8 +31,8 @@
             @foreach ($services as $service)
             <tr class="transition"
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
-                <td class="text-center fw-bold px-4 py-3 text-primary">{{ $service->id }}</td>
-                <td class="text-start fw-semibold px-4 py-3 text-secondary">{{ $service->name }}</td>
+                <td class="text-center   px-4 py-3 ">{{ $service->id }}</td>
+                <td class="text-start  px-4 py-3 ">{{ $service->name }}</td>
                 <td class="text-center px-4 py-3 text-muted">{{ $service->created_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3 text-muted">{{ $service->updated_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3">
