@@ -23,7 +23,6 @@ class ServiceUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $product_id = $this->route('product')->id;
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
