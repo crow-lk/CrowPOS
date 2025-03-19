@@ -14,7 +14,7 @@
     <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
-        
+
         <!-- Table Head -->
         <thead style="background: #2C3E50; color: white;">
             <tr>
@@ -43,12 +43,6 @@
                 <td class="text-center px-4 py-3 text-muted">{{ $supplier->created_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3">
                     <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
-                        <!-- Uncomment if you want to add edit functionality -->
-                        <!-- <a href="{{ route('suppliers.edit', $supplier) }}"
-                            class="btn btn-sm px-3 py-1 shadow-sm rounded-pill"
-                            style="background: #2980b9; color: white; border: none;">
-                            <i class="fas fa-edit"></i>
-                        </a> -->
                         <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
                             data-url="{{ route('suppliers.destroy', $supplier) }}"
                             style="background: #e74c3c; color: white; border: none;">
@@ -82,26 +76,26 @@
             })
 
             swalWithBootstrapButtons.fire({
-                title: {{ __('customer.sure') }},
-                text: {{ __('customer.really_delete') }},
-                icon: 'warning',
+                title: '{{ __('supplier.sure') }}', // Wrap in quotes
+                text: '{{ __('supplier.really_delete') }}', // Wrap in quotes
+                icon: 'warning', // Fix the icon string
                 showCancelButton: true,
-                confirmButtonText: {{ __('customer.yes_delete') }},
-                cancelButtonText: {{ __('customer.No') }},
+                confirmButtonText: '{{ __('supplier.yes_delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('supplier.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
                     $.post($this.data('url'), {
                         _method: 'DELETE',
-                        _token: '{{csrf_token()}}'
+                        _token: '{{ csrf_token() }}' // Wrap in quotes
                     }, function(res) {
                         $this.closest('tr').fadeOut(500, function() {
                             $(this).remove();
-                        })
-                    })
+                        });
+                    });
                 }
-            })
-        })
-    })
+            });
+        });
+    });
 </script>
 @endsection

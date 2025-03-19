@@ -22,20 +22,20 @@ $black: #000000;
 // Light Mode Colors
 $light-bg: #f8fafc; // Light mode background color
 $light-text: #000000; // Text color for light mode
-$light-navbar: #ffffff; // Navbar/sidebar background in light mode
-$light-input: #ffffff; // Input fields in light mode
-$light-hover: #e9ecef; // Hover effect in light mode
+$light-navbar: #f5f6fa; // Navbar/sidebar background in light mode
+$light-input: #f5f6fa; // Input fields in light mode
+$light-hover: #f5f6fa; // Hover effect in light mode
 
 // Dark Mode Colors
-$dark-bg: #121212; // Dark mode background color
+$dark-bg: #444; // Dark mode background color
 $dark-text: #ffffff; // Text color for dark mode
-$dark-navbar: #1e1e1e; // Navbar/sidebar background in dark mode
+$dark-navbar: #454d55; // Navbar/sidebar background in dark mode
 $dark-input: #333; // Input fields in dark mode
 $dark-hover: #444; // Hover effect in dark mode
 
 // Sidebar-Specific Colors
 $sidebar-dark-bg: $dark-navbar; // Sidebar background in dark mode
-$sidebar-light-bg: #ffffff; // Sidebar background in light mode
+$sidebar-light-bg: #f5f6fa; // Sidebar background in light mode
 $sidebar-dark-text: $dark-text; // Sidebar text in dark mode
 $sidebar-light-text: #000000; // Sidebar text in light mode
 

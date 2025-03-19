@@ -14,7 +14,7 @@
     <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
-        
+
         <!-- Table Head -->
         <thead style="background: #2C3E50; color: white;">
             <tr>
@@ -50,12 +50,12 @@
                         <a href="{{ route('customers.edit', $customer) }}"
                             class="btn btn-sm px-3 py-1 shadow-sm rounded-pill"
                             style="background: #2980b9; color: white; border: none;">
-                            <i class="fas fa-edit"></i> 
+                            <i class="fas fa-edit"></i>
                         </a>
                         <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
                             data-url="{{ route('customers.destroy', $customer) }}"
                             style="background: #e74c3c; color: white; border: none;">
-                            <i class="fas fa-trash"></i> 
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </td>
@@ -82,15 +82,15 @@
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
-            });
+            })
 
             swalWithBootstrapButtons.fire({
-                title: '{{ __('customer.sure ') }}', // Wrap in quotes
-                text: '{{ __('customer.really_delete ') }}', // Wrap in quotes
-                icon: 'warning',
+                title: '{{ __('customer.sure') }}', // Wrap in quotes
+                text: '{{ __('customer.really_delete') }}', // Wrap in quotes
+                icon: 'warning', // Fix the icon string
                 showCancelButton: true,
-                confirmButtonText: '{{ __('customer.yes_delete ') }}', // Wrap in quotes
-                cancelButtonText: '{{ __('customer.No ') }}', // Wrap in quotes
+                confirmButtonText: '{{ __('customer.yes_delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('customer.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
