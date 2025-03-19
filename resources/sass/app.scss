@@ -269,3 +269,6 @@ body.dark-mode .main-sidebar {
         color: $blue;
     }
 }
+.main-sidebar .nav-item.has-treeview .nav-treeview {
+    padding-left: 20px; /* Adjust this value for the desired indent */
+}
