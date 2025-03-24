@@ -51,6 +51,7 @@ return [
     'No'                => 'No',
     'Product_Type'      => 'Product Type',
     'Category'          => 'Category',
+    'supplier' => 'Supplier',
     'Brand'             => 'Brand',
     'Select_Product_Type'      => 'Select Product Type',
     'Select_Category'          => 'Select Category',

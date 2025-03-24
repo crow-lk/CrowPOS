@@ -18,6 +18,10 @@ class Supplier extends Model
         'address',
         'avatar'
     ];
-
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    
     // Define relationships here (e.g., with the Product model)
 }

@@ -122,6 +122,26 @@
                 </span>
                 @enderror
             </div>
+            <div class="form-group">
+            <label for="supplier_id">{{ __('product.supplier') }}</label>
+    <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
+        <option value="">{{ __('product.Select_Supplier') }}</option>
+        @foreach($suppliers as $supplier)
+        <option value="{{ $supplier->id }}" 
+                {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
+                {{ $supplier->first_name }} {{ $supplier->last_name }}
+            </option>
+        @endforeach
+    </select>
+    @error('supplier_id')
+    <span class="invalid-feedback" role="alert">
+        <strong>{{ $message }}</strong>
+    </span>
+    @enderror
+</div>
+
+         
+
 
             <div class="form-group">
                 <label for="quantity">{{ __('product.Quantity') }}</label>

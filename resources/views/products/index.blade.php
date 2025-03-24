@@ -24,6 +24,7 @@
                 <th class="text-center px-4 py-3">{{ __('product.Barcode') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Price') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Quantity') }}</th>
+              
                 <th class="text-center px-4 py-3">{{ __('product.Status') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Created_At') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Updated_At') }}</th>
@@ -45,6 +46,7 @@
                 <td class="text-center px-4 py-3">{{ $product->barcode }}</td>
                 <td class="text-center px-4 py-3">{{ number_format($product->price, 2) }}</td>
                 <td class="text-center px-4 py-3">{{ $product->quantity }}</td>
+
                 <td class="text-center px-4 py-3">
                     <span class="badge badge-{{ $product->status ? 'success' : 'danger' }}">
                         {{ $product->status ? __('common.Active') : __('common.Inactive') }}
