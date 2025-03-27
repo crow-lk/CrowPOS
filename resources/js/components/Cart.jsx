@@ -3,6 +3,7 @@ import { createRoot } from "react-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { sum } from "lodash";
+import jsPDF from "jspdf";
 
 class Cart extends Component {
     constructor(props) {
@@ -28,6 +29,79 @@ class Cart extends Component {
         this.handleClickSubmit = this.handleClickSubmit.bind(this);
         this.loadTranslations = this.loadTranslations.bind(this);
     }
+
+    generateInvoice = (orderData) => {
+        // Initial height for the PDF
+        let pdfHeight = 100; // Default height
+        const doc = new jsPDF({
+            orientation: "portrait",
+            format: [pdfHeight, 100],
+        });
+
+        // Add title
+        doc.setFontSize(20);
+        doc.text("Crow.lk", 38, 20);
+        doc.setFontSize(20);
+        doc.text("INVOICE", 36, 30);
+
+        // Draw a horizontal line
+        doc.setLineWidth(0.5);
+        doc.line(0, 37, 200, 37);
+
+        // Add customer details
+        doc.setFontSize(12);
+        doc.text(`Customer Name: ${orderData.customer_id}`, 5, 45); // Use customer_name here
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 5, 50);
+
+        // Draw a horizontal line
+        doc.setLineWidth(0.5);
+        doc.line(0, 55, 200, 55);
+
+        // Add cart items
+        doc.text("Items", 45, 60);
+        doc.text("Name", 5, 65);
+        doc.text("Quantity", 50, 65);
+        doc.text("Price (Rs.)", 70, 65);
+
+        doc.line(0, 67, 200, 67);
+
+        let y = 72;
+        orderData.cart.forEach(item => {
+            doc.text(item.name, 5, y);
+            doc.text(item.pivot.quantity.toString(), 55, y);
+            doc.text(item.price.toString(), 70, y);
+            y += 5;
+        });
+
+        doc.line(10, y, 200, y);
+        doc.setLineWidth(0.5);
+        doc.line(0, y, 200, y);
+
+        // Add total amount
+        doc.text('Total Amount:', 5, y + 5);
+        doc.text(orderData.amount, 70, y + 5);
+
+        // Check if the amount paid is less than the total
+        const amountPaid = parseFloat(orderData.amount);
+        const totalAmount = parseFloat(this.getTotal(orderData.cart));
+        if (amountPaid < totalAmount) {
+            const remainingAmount = (totalAmount - amountPaid).toFixed(2);
+            doc.text(`Amount to Pay:`, 5, y + 10);
+            doc.text(remainingAmount, 70, y + 10);
+        }
+
+        // Calculate the total height needed
+        const totalHeight = y + 15; // Add some padding
+
+        // Update the PDF height if needed
+        if (totalHeight > pdfHeight) {
+            pdfHeight = totalHeight;
+            doc.setProperties({ height: pdfHeight });
+        }
+
+        // Save the PDF
+        doc.save(`invoice_${orderData.customer_id}.pdf`);
+    };
 
     componentDidMount() {
         // Load user cart, translations, products, and customers
@@ -207,6 +281,11 @@ class Cart extends Component {
                     })
                     .then((res) => {
                         this.loadCart();
+                        this.generateInvoice({
+                            customer_id: this.state.customer_id,
+                            amount,
+                            cart: this.state.cart,
+                        });
                         return res.data;
                     })
                     .catch((err) => {
