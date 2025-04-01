@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\brandStoreRequest;
+use App\Http\Requests\BrandStoreRequest;
 use App\Models\ProductType;
-use App\Models\brand;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
