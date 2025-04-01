@@ -22,6 +22,11 @@ class Supplier extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
     
     // Define relationships here (e.g., with the Product model)
 }
