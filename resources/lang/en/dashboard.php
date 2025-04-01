@@ -25,8 +25,10 @@ return [
     'Income_Today'      => 'Income Today',
     'Customers_Count'   => 'Customers Count',
     'Orders_Count'      => 'Orders Count',
-    'Hot_Products'  => 'Hot Products',
-    'Best_Selling_Products' => 'Best Selling Products',
-    'Hot_Products_Year' => 'Hot Products Year',
+    'Hot_Products_Year' => 'Hot Products of Year',
     'Low_Stock_Products' => 'Low Stock Products',
+    'Hot_Products' => 'Hot Products',
+    'Best_Selling_Products' => 'Best Selling Products',
+
+
 ];
