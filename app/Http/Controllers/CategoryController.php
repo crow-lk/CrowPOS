@@ -50,7 +50,7 @@ class CategoryController extends Controller
         if (!$Category) {
             return redirect()->back()->with('error', __('category.error_creating'));
         }
-        return redirect()->route('categories.index')->with('success', __('category.succes_creating'));
+        return redirect()->route('categories.index')->with('success', __('category.success_creating'));
     }
 
     /**

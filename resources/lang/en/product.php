@@ -51,10 +51,11 @@ return [
     'No'                => 'No',
     'Product_Type'      => 'Product Type',
     'Category'          => 'Category',
-    'supplier' => 'Supplier',
+    'Supplier' => 'Supplier',
     'Brand'             => 'Brand',
     'Select_Product_Type'      => 'Select Product Type',
     'Select_Category'          => 'Select Category',
     'Select_Brand'             => 'Select Brand',
+    'Select_Supplier'             => 'Select Supplier',
 
 ];

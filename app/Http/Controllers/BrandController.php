@@ -52,7 +52,7 @@ class BrandController extends Controller
         if (!$brand) {
             return redirect()->back()->with('error', __('brand.error_creating'));
         }
-        return redirect()->route('brands.index')->with('success', __('brand.succes_creating'));
+        return redirect()->route('brands.index')->with('success', __('brand.success_creating'));
     }
 
     /**
