@@ -123,11 +123,11 @@
                 @enderror
             </div>
             <div class="form-group">
-            <label for="supplier_id">{{ __('product.supplier') }}</label>
+            <label for="supplier_id">{{ __('product.Supplier') }}</label>
     <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
         <option value="">{{ __('product.Select_Supplier') }}</option>
         @foreach($suppliers as $supplier)
-        <option value="{{ $supplier->id }}" 
+        <option value="{{ $supplier->id }}"
                 {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
                 {{ $supplier->first_name }} {{ $supplier->last_name }}
             </option>
@@ -140,7 +140,7 @@
     @enderror
 </div>
 
-         
+
 
 
             <div class="form-group">

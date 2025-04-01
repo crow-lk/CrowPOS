@@ -14,7 +14,7 @@
     <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
-        
+
         <!-- Table Head -->
         <thead style="background: #2C3E50; color: white;">
             <tr>
@@ -38,12 +38,12 @@
         <a href="{{ route('categories.edit', $category) }}"
             class="btn btn-sm px-3 py-1 shadow-sm rounded-pill"
             style="background: #2980b9; color: white; border: none;">
-            <i class="fas fa-edit"></i> 
+            <i class="fas fa-edit"></i>
         </a>
         <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
             data-url="{{ route('categories.destroy', $category) }}"
             style="background: #e74c3c; color: white; border: none;">
-            <i class="fas fa-trash"></i> 
+            <i class="fas fa-trash"></i>
         </button>
     </div>
 </td>
@@ -67,7 +67,7 @@
             var $this = $(this);
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-success',
+                    confirmButton: 'btn btn-success ml-2',
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false

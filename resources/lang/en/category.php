@@ -25,6 +25,7 @@ return [
     'success_creating'  => 'Success, you Category have been created.',
     'error_updating'    => 'Sorry, there\'re a problem while updating Category.',
     'success_updating'  => 'Success, your Category have been updated.',
+    'Cannot_Delete' => 'This category cannot be deleted because it',
 
     //==========================================
     // Category table messages

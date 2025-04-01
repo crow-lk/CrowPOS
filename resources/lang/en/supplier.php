@@ -48,4 +48,7 @@ return [
     'yes_delete'        => 'Yes, delete it!',
     'No'                => 'No',
     'Actions'           => 'Actions',
+    'error' => 'Error',
+    'something_went_wrong' => 'Something went wrong. Please try again.',
+    'ok' => 'OK',
 ];

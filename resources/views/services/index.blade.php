@@ -14,7 +14,7 @@
     <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
-        
+
         <!-- Table Head -->
         <thead style="background: #2C3E50; color: white;">
             <tr>
@@ -68,7 +68,7 @@
             var $this = $(this);
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-success',
+                    confirmButton: 'btn btn-success ml-2',
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
