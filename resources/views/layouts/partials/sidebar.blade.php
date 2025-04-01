@@ -23,7 +23,7 @@
 
 
                 <!-- Products Dropdown -->
-                <li class="nav-item has-treeview {{ activeSegment('products.index') || activeSegment('categories.index') || activeSegment('productTypes.index') || activeSegment('brands.index') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ activeSegment('products.index') || activeSegment('categories.index') || activeSegment('productTypes.index') || activeSegment('brands.index') || activeSegment('stocks.index') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cubes"></i>
                         <p>
@@ -54,6 +54,12 @@
                             <a href="{{ route('brands.index') }}" class="nav-link {{ activeSegment('brands.index') }}">
                                 <i class="nav-icon fas fa-tags"></i>
                                 <p>{{ __('brand.title') }}</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('stocks.index') }}" class="nav-link {{ activeSegment('stocks.index') }}">
+                                <i class="nav-icon fas fa-tags"></i>
+                                <p>{{ __('stock.title') }}</p>
                             </a>
                         </li>
                     </ul>
