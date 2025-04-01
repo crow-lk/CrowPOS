@@ -11,6 +11,7 @@ use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('productTypes', ProductTypeController::class);
     Route::resource('brands', BrandController::class);
+    Route::resource('stock_movements', StockMovementController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('orders', OrderController::class);

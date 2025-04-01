@@ -12,12 +12,12 @@ class StockMovement extends Model
     protected $fillable = [
         'movement_type',
         'supplier_id',
-        'items',
+        'products',
         'reason',
     ];
 
     protected $casts = [
-        'items' => 'array',
+        'products' => 'json',
     ];
 
     public function supplier()

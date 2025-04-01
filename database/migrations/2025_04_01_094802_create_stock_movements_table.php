@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('movement_type', ['stock_in', 'stock_out', 'adjustment']);
             $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
-            $table->json('items');
+            $table->json('products');
             $table->string('reason')->nullable();
             $table->timestamps();
         });
