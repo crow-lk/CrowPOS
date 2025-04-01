@@ -51,7 +51,7 @@ class ProductTypeController extends Controller
         if (!$ProductType) {
             return redirect()->back()->with('error', __('productType.error_creating'));
         }
-        return redirect()->route('productTypes.index')->with('success', __('productType.succes_creating'));
+        return redirect()->route('productTypes.index')->with('success', __('productType.success_creating'));
     }
 
     /**
