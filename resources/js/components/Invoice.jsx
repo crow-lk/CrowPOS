@@ -74,15 +74,20 @@ const Invoice = ({ orderData }) => {
 
 
         <View style={styles.section}>
-        <Text>Customer: {orderData.customer ? `${orderData.customer.first_name} ${orderData.customer.last_name}` : 'N/A'}</Text>
-          <Text>Date: {new Date().toLocaleDateString()}</Text>
-        </View>
-        <View style={styles.line} />
-
+  
+  <Text>
+    Customer: {orderData.customer ? `${orderData.customer.first_name} ${orderData.customer.last_name}` : 'N/A'}
+  </Text>
+  <Text>
+    Order ID: {orderData.order_id ? orderData.order_id : 'N/A'}
+  </Text>
+  <Text>Date: {new Date().toLocaleDateString()}</Text>
+</View>
+<View style={styles.line} />
         <View style={styles.section}>
           {orderData.cart.map((item, index) => (
            <View key={index} style={styles.itemRow}>
-           <Text style={styles.itemText}>{item.name}</Text>
+           <Text style={[styles.itemText, { marginBottom: 2 }]}>{item.name}</Text>
            <View style={styles.rowBetween}>
              <Text style={styles.itemText}>Qty: {item.pivot.quantity} × {item.price}</Text>
              <Text style={styles.itemText}>Rs.{(item.pivot.quantity * item.price).toFixed(2)}</Text>

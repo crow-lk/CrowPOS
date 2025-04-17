@@ -222,32 +222,33 @@ class Cart extends Component {
                         amount,
                     })
                     .then((res) => {
-                        const order = res.data;
-            
+                        const { order, order_id } = res.data;
+    
                         this.loadCart();
+    
                         this.setState({
                             invoiceData: {
+                                order_id,
                                 customer: order.customer,
-                                amount, // if you need it
+                                amount,
                                 cart: this.state.cart,
-                            }
+                            },
                         });
-            
-                        return order;
+    
+                        return res.data;
                     })
                     .catch((err) => {
                         Swal.showValidationMessage(err.response.data.message);
                     });
-            }
-            ,
+            },
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
             if (result.value) {
-                // Optionally, you can trigger the download here
+                // You can trigger the invoice print or download here
             }
         });
     }
-
+    
     render() {
         const { cart, products, customers, barcode, translations } = this.state;
 
