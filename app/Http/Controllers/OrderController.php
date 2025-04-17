@@ -54,7 +54,9 @@ class OrderController extends Controller
             'amount' => $request->amount,
             'user_id' => $request->user()->id,
         ]);
-        return 'success';
+        $order->load('customer'); // Eager load customer relationship
+return response()->json($order); // Includes full customer info
+
     }
     public function partialPayment(Request $request)
     {

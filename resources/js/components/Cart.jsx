@@ -222,14 +222,24 @@ class Cart extends Component {
                         amount,
                     })
                     .then((res) => {
+                        const order = res.data;
+            
                         this.loadCart();
-                        this.setState({ invoiceData: { customer_id: this.state.customer_id, amount, cart: this.state.cart } });
-                        return res.data;
+                        this.setState({
+                            invoiceData: {
+                                customer: order.customer,
+                                amount, // if you need it
+                                cart: this.state.cart,
+                            }
+                        });
+            
+                        return order;
                     })
                     .catch((err) => {
                         Swal.showValidationMessage(err.response.data.message);
                     });
-            },
+            }
+            ,
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
             if (result.value) {
