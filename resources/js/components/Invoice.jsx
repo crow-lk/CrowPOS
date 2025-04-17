@@ -21,6 +21,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 4,
   },
+  headerText: {
+    fontSize: 10,
+    marginTop:2,
+  },
   line: {
     borderBottom: '1pt dashed gray',
     marginVertical: 4,
@@ -30,6 +34,12 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 10,
+  },
+  balanceText: {
+    fontSize: 10,
+    textAlign: 'right',
+    marginTop:2,
+    
   },
   total: {
     fontSize: 12,
@@ -75,13 +85,13 @@ const Invoice = ({ orderData }) => {
 
         <View style={styles.section}>
   
-  <Text>
-    Customer: {orderData.customer ? `${orderData.customer.first_name} ${orderData.customer.last_name}` : 'N/A'}
+  <Text style={styles.headerText}>
+    Customer: {orderData.customer ? `${orderData.customer.first_name} ${orderData.customer.last_name}` : 'General Customer'}
   </Text>
-  <Text>
+  <Text style={styles.headerText}>
     Order ID: {orderData.order_id ? orderData.order_id : 'N/A'}
   </Text>
-  <Text>Date: {new Date().toLocaleDateString()}</Text>
+  <Text style={styles.headerText}>Date: {new Date().toLocaleDateString()}</Text>
 </View>
 <View style={styles.line} />
         <View style={styles.section}>
@@ -98,18 +108,21 @@ const Invoice = ({ orderData }) => {
         </View>
 
         <View style={styles.line} />
-        <Text style={styles.total}>Total: Rs. {orderData.amount}</Text>
-        <View style={styles.line} />
+<Text style={styles.total}>Total: Rs. {orderData.amount}</Text>
+<Text style={styles.balanceText}>Received: Rs. {(orderData.receivedAmount).toFixed(2)}</Text>
+<Text style={styles.balanceText}>Balance: Rs. {(orderData.balance).toFixed(2)}</Text>
+<View style={styles.line} />
+
         <View style={styles.line} />
 
-        <View style={{ marginTop: 8 }}>
+        <View style={{ marginTop: 6 }}>
           <Text style={{ textAlign: 'center' }}>Thank you! Come Again.</Text>
          
 
         </View>
         <View style={{ marginTop: 6 }}>
          
-          <Text style={{ textAlign: 'center',fontSize: 8  }}>Developed by crow.lk</Text>
+          <Text style={{ textAlign: 'center',fontSize: 8 ,marginBottom:2 }}>Developed by crow.lk</Text>
           <Text style={{ textAlign: 'center',fontSize: 8  }}>contact +94 77 437 9390</Text>
 
         </View>

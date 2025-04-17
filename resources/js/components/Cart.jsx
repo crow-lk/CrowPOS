@@ -216,10 +216,14 @@ class Cart extends Component {
             confirmButtonText: this.state.translations["confirm_pay"],
             showLoaderOnConfirm: true,
             preConfirm: (amount) => {
+                const totalAmount = this.getTotal(this.state.cart);
+                const receivedAmount = parseFloat(amount);
+                const balance = receivedAmount - totalAmount;
+    
                 return axios
                     .post("/admin/orders", {
                         customer_id: this.state.customer_id,
-                        amount,
+                        amount: totalAmount,
                     })
                     .then((res) => {
                         const { order, order_id } = res.data;
@@ -230,7 +234,9 @@ class Cart extends Component {
                             invoiceData: {
                                 order_id,
                                 customer: order.customer,
-                                amount,
+                                amount: totalAmount, // total
+                                receivedAmount,
+                                balance,
                                 cart: this.state.cart,
                             },
                         });
@@ -244,7 +250,7 @@ class Cart extends Component {
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
             if (result.value) {
-                // You can trigger the invoice print or download here
+                // Optionally print/download invoice
             }
         });
     }
