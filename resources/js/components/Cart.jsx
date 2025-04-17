@@ -510,14 +510,27 @@ class Cart extends Component {
                         </button>
                     </div>
                     {this.state.invoiceData && (
-                        <PDFDownloadLink
-                            document={<Invoice orderData={this.state.invoiceData} />}
-                            fileName={`invoice_${this.state.invoiceData.customer_id}.pdf`}
-                        >
-                            {({ blob, url, loading, error }) =>
-                                loading ? 'Loading document...' : 'Download Invoice'
-                            }
-                        </PDFDownloadLink>
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                      <PDFDownloadLink
+                          document={<Invoice orderData={this.state.invoiceData} />}
+                          fileName={`invoice_${this.state.invoiceData.customer_id}.pdf`}
+                      >
+                          {({ loading }) => (
+                              <button style={{
+                                  padding: '8px 16px',
+                                  backgroundColor: '#28a745',
+                                  color: '#fff',
+                                  border: 'none',
+                                  borderRadius: 4,
+                                  cursor: 'pointer'
+                              }}>
+                                  {loading ? 'Generating...' : 'Download Invoice'}
+                              </button>
+                          )}
+                      </PDFDownloadLink>
+                  </div>
+                  
+                   
                     )}
                 </div>
 
