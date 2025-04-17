@@ -287,7 +287,7 @@
                                        </span>
                                     </p>
                                     <p><strong>Barcode:</strong> {{$product->barcode}}</p>
-                                    <p><strong>Updated At:</strong> {{$product->updated_at->format('d M Y')}}</p>
+                                    
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
