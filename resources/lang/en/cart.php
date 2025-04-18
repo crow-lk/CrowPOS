@@ -29,8 +29,12 @@ return [
     //==========================================
     'scan_barcode'      => 'Scan Barcode...',
     'received_amount'   => 'Received Amount',
+    'invoice_ready'   => 'Invoice Generated',
+    'view_invoice'   => 'View Invoice',
     'confirm_pay'       => 'Receive',
     'cancel_pay'        => 'Cancel',
+    'confirm'       => 'Confirm',
+    'cancel'        => 'Cancel',
     'general_customer'  => 'General Customer',
     'product_name'      => 'Product Name',
     'quantity'          => 'Quantity',
