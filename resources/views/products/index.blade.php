@@ -11,6 +11,15 @@
 @section('content')
 <div class="card product-list">
     <div class="card-body">
+
+    {{-- search function using product name --}}
+    <form action="{{ route('products.index') }}" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="{{ __('product.Search_by_name') }}"
+                value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary">{{ __('product.Search') }}</button>
+        </div>
+    </form>
     <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
@@ -41,7 +50,14 @@
                 <td class="text-center px-4 py-3">{{ $product->id }}</td>
                 <td class="text-center px-4 py-3">{{ $product->name }}</td>
                 <td class="text-center px-4 py-3">
+                    {{-- <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;"> --}}
+                    {{-- if no image can be found use N/A --}}
+                    @if ($product->image)
                     <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                    @else
+                    {{ __('Image N/A') }}
+                    @endif
+
                 </td>
                 <td class="text-center px-4 py-3">{{ $product->barcode }}</td>
                 <td class="text-center px-4 py-3">{{ number_format($product->price, 2) }}</td>

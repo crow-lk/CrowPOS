@@ -41,4 +41,12 @@ class StockMovementController extends Controller
 
         return redirect()->route('stock_movements.index')->with('success', 'Stock movement created successfully.');
     }
+
+    //delete stock movement
+    public function destroy(StockMovement $stockMovement)
+    {
+        $stockMovement->delete();
+
+        return redirect()->route('stock_movements.index')->with('success', 'Stock movement deleted successfully.');
+    }
 }
