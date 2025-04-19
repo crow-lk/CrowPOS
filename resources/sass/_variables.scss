@@ -1,19 +1,43 @@
 // Body
-$body-bg: #f8fafc;
+$body-bg: #f8fafc; // Light mode background color
 
 // Typography
-$font-family-sans-serif: 'Nunito', sans-serif;
+$font-family-sans-serif: 'Poppins', sans-serif; // Updated to use Poppins font
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
-// Colors
-$blue: #3490dc;
+// Colors (Light Mode)
+$blue: #0c4884; // Primary blue color
 $indigo: #6574cd;
 $purple: #9561e2;
 $pink: #f66d9b;
-$red: #e3342f;
-$orange: #f6993f;
-$yellow: #ffed4a;
-$green: #38c172;
+$red: #9d0707;
+$orange: #754515;
+$yellow: #e0e034;
+$green: #1d874b;
 $teal: #4dc0b5;
-$cyan: #6cb2eb;
+$cyan: #074475;
+$black: #000000;
+
+// Light Mode Colors
+$light-bg: #f8fafc; // Light mode background color
+$light-text: #000000; // Text color for light mode
+$light-navbar: #f5f6fa; // Navbar/sidebar background in light mode
+$light-input: #f5f6fa; // Input fields in light mode
+$light-hover: #f5f6fa; // Hover effect in light mode
+
+// Dark Mode Colors
+$dark-bg: #444; // Dark mode background color
+$dark-text: #ffffff; // Text color for dark mode
+$dark-navbar: #454d55; // Navbar/sidebar background in dark mode
+$dark-input: #333; // Input fields in dark mode
+$dark-hover: #444; // Hover effect in dark mode
+
+// Sidebar-Specific Colors
+$sidebar-dark-bg: $dark-navbar; // Sidebar background in dark mode
+$sidebar-light-bg: #f5f6fa; // Sidebar background in light mode
+$sidebar-dark-text: $dark-text; // Sidebar text in dark mode
+$sidebar-light-text: #000000; // Sidebar text in light mode
+
+// Transitions
+$transition-duration: 0.3s; // Smooth transition duration

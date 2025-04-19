@@ -10,12 +10,24 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
+        'category_id',
+        'product_type_id',
+        'brand_id',
+        'supplier_id',
         'image',
         'barcode',
         'price',
         'quantity',
-        'status'
+        'status',
+        
+        
+        
     ];
+    public function supplier()
+{
+    return $this->belongsTo(Supplier::class);
+}
+
 
     public function getImageUrl()
     {
@@ -24,4 +36,6 @@ class Product extends Model
         }
         return asset('images/img-placeholder.jpg');
     }
+
+
 }

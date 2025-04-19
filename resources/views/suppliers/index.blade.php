@@ -11,41 +11,51 @@
 @section('content')
 <div class="card">
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ __('ID') }}</th>
-                    <!-- <th>{{ __('supplier.Avatar') }}</th> -->
-                    <th>{{ __('First Name') }}</th>
-                    <th>{{ __('Last Name') }}</th>
-                    <th>{{ __('Email') }}</th>
-                    <th>{{ __('Phone') }}</th>
-                    <th>{{ __('Address') }}</th>
-                    <th>{{ __('Created At') }}</th>
-                    <th>{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($suppliers as $supplier)
-                <tr>
-                    <td>{{$supplier->id}}</td>
-                    {{-- <td>
-                       <img width="50" src="{{$supplier->getAvatarUrl()}}" alt=""> 
-                    </td> --}}
-                    <td>{{$supplier->first_name}}</td>
-                    <td>{{$supplier->last_name}}</td>
-                    <td>{{$supplier->email}}</td>
-                    <td>{{$supplier->phone}}</td>
-                    <td>{{$supplier->address}}</td>
-                    <td>{{$supplier->created_at}}</td>
-                    <td>
-                        <!-- <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a> -->
-                        <button class="btn btn-danger btn-delete" data-url="{{route('suppliers.destroy', $supplier)}}"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="table-responsive">
+    <table class="table table-hover align-middle shadow-lg rounded"
+        style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
+
+        <!-- Table Head -->
+        <thead style="background: #2C3E50; color: white;">
+            <tr>
+                <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('ID') }}</th>
+                <th class="text-start px-4 py-3">{{ __('First Name') }}</th>
+                <th class="text-start px-4 py-3">{{ __('Last Name') }}</th>
+                <th class="text-start px-4 py-3">{{ __('Email') }}</th>
+                <th class="text-start px-4 py-3">{{ __('Phone') }}</th>
+                <th class="text-start px-4 py-3">{{ __('Address') }}</th>
+                <th class="text-center px-4 py-3">{{ __('Created At') }}</th>
+                <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('Actions') }}</th>
+            </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody>
+            @foreach ($suppliers as $supplier)
+            <tr class="transition"
+                style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
+                <td class="text-center fw-bold px-4 py-3 ">{{ $supplier->id }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $supplier->first_name }}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{ $supplier->last_name }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->email }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->phone }}</td>
+                <td class="text-start px-4 py-3 ">{{ $supplier->address }}</td>
+                <td class="text-center px-4 py-3 text-muted">{{ $supplier->created_at->format('Y-m-d') }}</td>
+                <td class="text-center px-4 py-3">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
+                        <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
+                            data-url="{{ route('suppliers.destroy', $supplier) }}"
+                            style="background: #e74c3c; color: white; border: none;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
         {{ $suppliers->render() }}
     </div>
 </div>
@@ -59,33 +69,33 @@
             var $this = $(this);
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-success',
+                    confirmButton: 'btn btn-success ml-2',
                     cancelButton: 'btn btn-danger'
                 },
                 buttonsStyling: false
             })
 
             swalWithBootstrapButtons.fire({
-                title: {{ __('customer.sure') }},
-                text: {{ __('customer.really_delete') }},
-                icon: 'warning',
+                title: '{{ __('supplier.sure') }}', // Wrap in quotes
+                text: '{{ __('supplier.really_delete') }}', // Wrap in quotes
+                icon: 'warning', // Fix the icon string
                 showCancelButton: true,
-                confirmButtonText: {{ __('customer.yes_delete') }},
-                cancelButtonText: {{ __('customer.No') }},
+                confirmButtonText: '{{ __('supplier.yes_delete') }}', // Wrap in quotes
+                cancelButtonText: '{{ __('supplier.No') }}', // Wrap in quotes
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
                     $.post($this.data('url'), {
                         _method: 'DELETE',
-                        _token: '{{csrf_token()}}'
+                        _token: '{{ csrf_token() }}' // Wrap in quotes
                     }, function(res) {
                         $this.closest('tr').fadeOut(500, function() {
                             $(this).remove();
-                        })
-                    })
+                        });
+                    });
                 }
-            })
-        })
-    })
+            });
+        });
+    });
 </script>
 @endsection

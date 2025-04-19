@@ -8,118 +8,81 @@
 @section('content')
 <div class="card">
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-7"></div>
-            <div class="col-md-5">
-                <form action="{{route('orders.index')}}">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <input type="date" name="start_date" class="form-control" value="{{request('start_date')}}" />
-                        </div>
-                        <div class="col-md-5">
-                            <input type="date" name="end_date" class="form-control" value="{{request('end_date')}}" />
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-outline-primary" type="submit">{{ __('order.submit') }}</button>
-                        </div>
-                    </div>
-                </form>
+    <div class="row">
+    <div class="col-md-12">
+        <form action="{{route('orders.index')}}">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="date" name="start_date" class="form-control" value="{{request('start_date')}}" />
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="end_date" class="form-control" value="{{request('end_date')}}" />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-primary w-100" type="submit">{{ __('order.submit') }}</button>
+                </div>
             </div>
-        </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ __('order.ID') }}</th>
-                    <th>{{ __('order.Customer_Name') }}</th>
-                    <th>{{ __('order.Total') }}</th>
-                    <th>{{ __('order.Received_Amount') }}</th>
-                    <th>{{ __('order.Status') }}</th>
-                    <th>{{ __('order.To_Pay') }}</th>
-                    <th>{{ __('order.Created_At') }}</th>
-                    <th>{{ __('order.Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($orders as $order)
-                <tr>
-                    <td>{{$order->id}}</td>
-                    <td>{{$order->getCustomerName()}}</td>
-                    <td>{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
-                    <td>{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>
-                    <td>
-                        @if($order->receivedAmount() == 0)
-                            <span class="badge badge-danger">{{ __('order.Not_Paid') }}</span>
-                        @elseif($order->receivedAmount() < $order->total())
-                            <span class="badge badge-warning">{{ __('order.Partial') }}</span>
-                        @elseif($order->receivedAmount() == $order->total())
-                            <span class="badge badge-success">{{ __('order.Paid') }}</span>
-                        @elseif($order->receivedAmount() > $order->total())
-                            <span class="badge badge-info">{{ __('order.Change') }}</span>
-                        @endif
-                    </td>
-                    <td>{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
-                    <td>{{$order->created_at}}</td>
-                    <td>
-                        <button
-                            class="btn btn-sm btn-secondary btnShowInvoice"
-                            data-toggle="modal"
-                            data-target="#modalInvoice"
-                            data-order-id="{{ $order->id }}"
-                            data-customer-name="{{ $order->getCustomerName() }}"
-                            data-total="{{ $order->total() }}"
-                            data-received="{{ $order->receivedAmount() }}"
-                            data-items="{{ json_encode($order->items) }}"
-                            data-created-at="{{ $order->created_at }}"
-                            data-payment="{{ isset($order->payments) && count($order->payments) > 0 ? $order->payments[0]->amount : 0 }}">
-                            <ion-icon size="samll" name="eye"></ion-icon>
-                        </button>
+        </form>
+    </div>
+</div>
 
-                        @if($order->total() > $order->receivedAmount())
-                            <!-- Button for Partial Payment -->
-                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#partialPaymentModal" data-orders-id="{{ $order->id }}" data-remaining-amount="{{ $order->total() - $order->receivedAmount() }}">
-                                Pay Partial Amount
-                            </button>
-                            <!-- Partial Payment Modal -->
-                            <div class="modal fade" id="partialPaymentModal" tabindex="-1" role="dialog" aria-labelledby="partialPaymentModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="partialPaymentModalLabel">Pay Partial Amount</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="partialPaymentForm" method="POST" action="{{ route('orders.partial-payment') }}">
-                                                @csrf
-                                                <input type="hidden" name="order_id" id="modalOrderId" value="">
-                                                <div class="form-group">
-                                                    <label for="partialAmount">Enter Amount to Pay</label>
-                                                    <input type="number" class="form-control" step="0.01" id="partialAmount" name="amount" value="{{ $order->total() - $order->receivedAmount() }}">
-                                                </div>
-                                                <button type="submit" class="btn btn-primary">Submit Payment</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th>{{ config('settings.currency_symbol') }} {{ number_format($total, 2) }}</th>
-                    <th>{{ config('settings.currency_symbol') }} {{ number_format($receivedAmount, 2) }}</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="table-responsive">
+    <table class="table table-hover align-middle shadow-lg rounded"
+        style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%; margin-top:3px;">
+        
+        <!-- Table Head with Updated Styles -->
+        <thead style="background: #2C3E50; color: white;">
+            <tr>
+                <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('order.ID') }}</th>
+                <th class="text-start px-4 py-3">{{ __('order.Customer_Name') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.Total') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.Received_Amount') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.Status') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.To_Pay') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.Created_At') }}</th>
+                <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('order.Actions') }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach ($orders as $order)
+            <tr class="transition" style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
+                <td class="text-center fw-bold px-4 py-3 ">{{$order->id}}</td>
+                <td class="text-start fw-semibold px-4 py-3 ">{{$order->getCustomerName()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>
+                <td class="text-center px-4 py-3">
+                    @if($order->receivedAmount() == 0)
+                        <span class="badge badge-danger">{{ __('order.Not_Paid') }}</span>
+                    @elseif($order->receivedAmount() < $order->total())
+                        <span class="badge badge-warning">{{ __('order.Partial') }}</span>
+                    @elseif($order->receivedAmount() == $order->total())
+                        <span class="badge badge-success">{{ __('order.Paid') }}</span>
+                    @elseif($order->receivedAmount() > $order->total())
+                        <span class="badge badge-info">{{ __('order.Change') }}</span>
+                    @endif
+                </td>
+                <td class="text-center px-4 py-3">{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
+                <td class="text-center px-4 py-3 text-muted">{{$order->created_at}}</td>
+                <td class="text-center px-4 py-3">
+                    <button class="btn btn-sm btn-secondary btnShowInvoice" data-toggle="modal"
+                        data-target="#modalInvoice"
+                        data-order-id="{{ $order->id }}"
+                        data-customer-name="{{ $order->getCustomerName() }}"
+                        data-total="{{ $order->total() }}"
+                        data-received="{{ $order->receivedAmount() }}"
+                        data-items="{{ json_encode($order->items) }}"
+                        data-created-at="{{ $order->created_at }}"
+                        data-payment="{{ isset($order->payments) && count($order->payments) > 0 ? $order->payments[0]->amount : 0 }}">
+                        <ion-icon size="small" name="eye"></ion-icon>
+                    </button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
         {{ $orders->render() }}
     </div>
 </div>

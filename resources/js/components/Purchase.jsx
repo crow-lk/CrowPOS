@@ -189,6 +189,9 @@ class Purchase extends Component {
     setCustomerId(event) {
         this.setState({ customer_id: event.target.value });
     }
+      
+      
+      
     handleClickSubmit() {
         Swal.fire({
             title: this.state.translations["received_amount"],

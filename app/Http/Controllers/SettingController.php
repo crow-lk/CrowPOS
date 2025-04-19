@@ -13,14 +13,22 @@ class SettingController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $data = $request->except('_token');
-        foreach ($data as $key => $value) {
-            $setting = Setting::firstOrCreate(['key' => $key]);
-            $setting->value = $value;
-            $setting->save();
-        }
+{
+    $data = $request->except('_token');
 
-        return redirect()->route('settings.index');
+    // Handle the image upload
+    if ($request->hasFile('app_logo')) {
+        $image_path = $request->file('app_logo')->store('products', 'public');
+        // Save the image path in the data array
+        $data['app_logo'] = $image_path; // Assuming 'app_logo' is the key for the image
     }
+
+    foreach ($data as $key => $value) {
+        $setting = Setting::firstOrCreate(['key' => $key]);
+        $setting->value = $value;
+        $setting->save();
+    }
+
+    return redirect()->route('settings.index');
+}
 }
