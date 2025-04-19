@@ -3,7 +3,7 @@ import { createRoot } from "react-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { sum } from "lodash";
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer'; // Import PDFViewer
 import Invoice from "./invoice";
 
 class Cart extends Component {
@@ -17,6 +17,8 @@ class Cart extends Component {
             search: "",
             customer_id: "",
             translations: {},
+            invoiceData: null, // State to hold invoice data
+            showInvoice: false, // State to control invoice visibility
         };
         this.loadCart = this.loadCart.bind(this);
         this.handleOnChangeBarcode = this.handleOnChangeBarcode.bind(this);
@@ -31,39 +33,20 @@ class Cart extends Component {
         this.loadTranslations = this.loadTranslations.bind(this);
     }
 
-    generateInvoice = (orderData) => {
-        // Create a PDFDownloadLink to render the Invoice component
-        return (
-            <PDFDownloadLink
-                document={<Invoice orderData={orderData} />}
-                fileName={`invoice_${orderData.customer_id}.pdf`}
-            >
-                {({ blob, url, loading, error }) =>
-                    loading ? 'Loading document...' : 'Download Invoice'
-                }
-            </PDFDownloadLink>
-        );
-    };
-
     componentDidMount() {
-        // Load user cart, translations, products, and customers
         this.loadTranslations();
         this.loadCart();
         this.loadProducts();
         this.loadCustomers();
-
-        // Add event listener to detect dark mode changes
         document.body.addEventListener("darkModeToggle", this.forceUpdate.bind(this));
     }
 
     componentWillUnmount() {
-        // Remove event listener to avoid memory leaks
         document.body.removeEventListener("darkModeToggle", this.forceUpdate.bind(this));
     }
 
     loadTranslations() {
-        axios
-            .get("/admin/locale/cart")
+        axios.get("/admin/locale/cart")
             .then((res) => {
                 const translations = res.data;
                 this.setState({ translations });
@@ -104,8 +87,7 @@ class Cart extends Component {
         event.preventDefault();
         const { barcode } = this.state;
         if (!!barcode) {
-            axios
-                .post("/admin/cart", { barcode })
+            axios.post("/admin/cart", { barcode })
                 .then((res) => {
                     this.loadCart();
                     this.setState({ barcode: "" });
@@ -125,8 +107,7 @@ class Cart extends Component {
         });
         this.setState({ cart });
         if (!qty) return;
-        axios
-            .post("/admin/cart/change-qty", { product_id, quantity: qty })
+        axios.post("/admin/cart/change-qty", { product_id, quantity: qty })
             .then((res) => {})
             .catch((err) => {
                 Swal.fire("Error!", err.response.data.message, "error");
@@ -139,8 +120,7 @@ class Cart extends Component {
     }
 
     handleClickDelete(product_id) {
-        axios
-            .post("/admin/cart/delete", { product_id, _method: "DELETE" })
+        axios.post("/admin/cart/delete", { product_id, _method: " DELETE" })
             .then((res) => {
                 const cart = this.state.cart.filter((c) => c.id !== product_id);
                 this.setState({ cart });
@@ -171,11 +151,8 @@ class Cart extends Component {
             if (!!cart) {
                 this.setState({
                     cart: this.state.cart.map((c) => {
-                        if (
-                            c.id === product.id &&
-                            product.quantity > c.pivot.quantity
-                        ) {
-                            c.pivot.quantity = c.pivot.quantity + 1;
+                        if (c.id === product.id && product.quantity > c.pivot.quantity) {
+                            c.pivot.quantity += 1;
                         }
                         return c;
                     }),
@@ -193,8 +170,7 @@ class Cart extends Component {
                     this.setState({ cart: [...this.state.cart, product] });
                 }
             }
-            axios
-                .post("/admin/cart", { barcode })
+            axios.post("/admin/cart", { barcode })
                 .then((res) => {})
                 .catch((err) => {
                     Swal.fire("Error!", err.response.data.message, "error");
@@ -205,6 +181,10 @@ class Cart extends Component {
     setCustomerId(event) {
         this.setState({ customer_id: event.target.value });
     }
+
+    handleClose = () => {
+        this.setState({ showInvoice: false });
+    };
 
     handleClickSubmit() {
         Swal.fire({
@@ -219,49 +199,55 @@ class Cart extends Component {
                 const totalAmount = this.getTotal(this.state.cart);
                 const receivedAmount = parseFloat(amount);
                 const balance = receivedAmount - totalAmount;
-    
-                return axios
-                    .post("/admin/orders", {
-                        customer_id: this.state.customer_id,
-                        amount: totalAmount,
-                    })
-                    .then((res) => {
-                        const { order, order_id } = res.data;
-    
-                        this.loadCart();
-    
-                        this.setState({
-                            invoiceData: {
-                                order_id,
-                                customer: order.customer,
-                                amount: totalAmount, // total
-                                receivedAmount,
-                                balance,
-                                cart: this.state.cart,
-                            },
-                        });
-    
-                        return res.data;
-                    })
-                    .catch((err) => {
-                        Swal.showValidationMessage(err.response.data.message);
+
+                return axios.post("/admin/orders", {
+                    customer_id: this.state.customer_id,
+                    amount: totalAmount,
+                })
+                .then((res) => {
+                    const { order, order_id } = res.data;
+
+                    this.loadCart();
+
+                    this.setState({
+                        invoiceData: {
+                            order_id,
+                            customer: order.customer,
+                            amount: totalAmount,
+                            receivedAmount,
+                            balance,
+                            cart: this.state.cart,
+                        },
                     });
+
+                    // Show confirmation dialog
+                    return Swal.fire({
+                        title: this.state.translations["invoice_ready"],
+                        text: this.state.translations["view_invoice"],
+                        icon: "success",
+                        confirmButtonText: this.state.translations["confirm"],
+                        cancelButtonText: this.state.translations["cancel"],
+                        showCancelButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.setState({ showInvoice: true }); // Show the invoice after confirmation
+                        }
+                        {/* PDF Viewer for Invoice */}
+                    });
+                })
+                .catch((err) => {
+                    Swal.showValidationMessage(err.response.data.message);
+                });
             },
             allowOutsideClick: () => !Swal.isLoading(),
-        }).then((result) => {
-            if (result.value) {
-                // Optionally print/download invoice
-            }
         });
     }
-    
-    render() {
-        const { cart, products, customers, barcode, translations } = this.state;
 
-        // Check if dark mode is enabled
+    render() {
+        const { cart, products, customers, barcode, translations, showInvoice, invoiceData } = this.state;
+
         const isDarkMode = document.body.classList.contains("dark-mode");
 
-        // Define base styles for dark and light modes
         const containerStyle = {
             display: "flex",
             height: "100vh",
@@ -277,9 +263,7 @@ class Cart extends Component {
             padding: "20px",
             backgroundColor: isDarkMode ? "#1e1e1e" : "#ffffff",
             borderRadius: "10px",
-            boxShadow: isDarkMode
-                ? "0 4px 6px rgba(255, 255, 255, 0.1)"
-                : "0 4px 6px rgba(0, 0, 0, 0.1)",
+            boxShadow: isDarkMode ? "0 4px 6px rgba(255, 255, 255, 0.1)" : "0 4px 6px rgba(0, 0, 0, 0.1)",
         };
 
         const inputStyle = {
@@ -308,303 +292,243 @@ class Cart extends Component {
         };
 
         return (
-            <div style={containerStyle}>
-                {/* Left Section */}
-                <div style={sectionStyle}>
-                    {/* Barcode Scanner */}
-                    <form onSubmit={this.handleScanBarcode}>
+            <>
+                {showInvoice && invoiceData && (
+                    <div style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1000,
+                        marginTop: '60px',
+                        marginLeft: '110px',
+                        height: '100%',
+                        width: '85%',
+                        backgroundColor: 'white',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                    }}>
+                        <button onClick={this.handleClose} style={{
+                        position: 'absolute',
+                        top: '50px',
+                        right: '10px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '5px 10px',
+                        cursor: 'pointer',
+                        }}>
+                        Close
+                        </button>
+                        <PDFViewer style={{ width: '100%', height: '100%' }}>
+                            <Invoice orderData={invoiceData} />
+                        </PDFViewer>
+                    </div>
+                )}
+                <div style={containerStyle}>
+                    {/* Left Section */}
+                    <div style={sectionStyle}>
+                        {/* Barcode Scanner */}
+                        <form onSubmit={this.handleScanBarcode}>
+                            <input
+                                type="text"
+                                style={inputStyle}
+                                placeholder={translations["scan_barcode"]}
+                                value={barcode}
+                                onChange={this.handleOnChangeBarcode}
+                            />
+                        </form>
+
+                        {/* Customer Dropdown */}
+                        <select
+                            style={inputStyle}
+                            onChange={this.setCustomerId}
+                        >
+                            <option value="">
+                                {translations["general_customer"]}
+                            </option>
+                            {customers.map((cus) => (
+                                <option key={cus.id} value={cus.id}>
+                                    {`${cus.first_name} ${cus.last_name}`}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Cart Table */}
+                        <div
+                            style={{
+                                maxHeight: "400px",
+                                overflowY: "auto",
+                                marginBottom: "15px",
+                                border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
+                                borderRadius: "5px",
+                            }}
+                        >
+                            <table
+                                style={{
+                                    width: "100%",
+                                    borderCollapse: "collapse",
+                                }}
+                            >
+                                <thead style={tableHeaderStyle}>
+                                    <tr>
+                                        <th style={{ textAlign: "left", padding: "8px", fontSize: "14px" }}>
+                                            {translations["product_name"]}
+                                        </th>
+                                        <th style={{ textAlign: "center", padding: "8px", fontSize: "14px" }}>
+                                            {translations["quantity"]}
+                                        </th>
+                                        <th style={{ textAlign: "right", padding: "8px", fontSize: "14px" }}>
+                                            {translations["price"]}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cart.map((c) => (
+                                        <tr key={c.id}>
+                                            <td style={{ textAlign: "left", padding: "8px", fontSize: "14px" }}>
+                                                {c.name}
+                                            </td>
+                                            <td style={{ textAlign: "center", padding: "8px" }}>
+                                                <input
+                                                    type="text"
+                                                    style={{ ...inputStyle, width: "60px" }}
+                                                    value={c.pivot.quantity}
+                                                    onChange={(event) => this.handleChangeQty(c.id, event.target.value)}
+                                                />
+                                                <button
+                                                    style={{
+                                                        marginLeft: "5px",
+                                                        padding: "5px 10px",
+                                                        backgroundColor: "#dc3545",
+                                                        color: "#fff",
+                                                        border: "none",
+                                                        borderRadius: "5px",
+                                                        cursor: "pointer",
+                                                        fontSize: "14px",
+                                                    }}
+                                                    onClick={() => this.handleClickDelete(c.id)}
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                            <td style={{ textAlign: "right", padding: "8px", fontSize: "14px" }}>
+                                                {window.APP.currency_symbol} {(c.price * c.pivot.quantity).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Total and Buttons */}
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {translations["total"]}:
+                            </div>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {window.APP.currency_symbol} {this.getTotal(cart)}
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    flex: 1,
+                                    backgroundColor: "#dc3545",
+                                    color: "#fff",
+                                    marginRight: "10px",
+                                }}
+                                onClick={this.handleEmptyCart}
+                                disabled={!cart.length}
+                            >
+                                {translations["cancel"]}
+                            </button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    flex: 1,
+                                    backgroundColor: "#007bff",
+                                    color: "#fff",
+                                }}
+                                disabled={!cart.length}
+                                onClick={this.handleClickSubmit}
+                            >
+                                {translations["checkout"]}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Right Section */}
+                    <div style={sectionStyle}>
+                        {/* Search Bar */}
                         <input
                             type="text"
                             style={inputStyle}
-                            placeholder={translations["scan_barcode"]}
-                            value={barcode}
-                            onChange={this.handleOnChangeBarcode}
+                            placeholder={translations["search_product"] + "..."}
+                            onChange={this.handleChangeSearch}
+                            onKeyDown={this.handleSeach}
                         />
-                    </form>
 
-                    {/* Customer Dropdown */}
-                    <select
-                        style={inputStyle}
-                        onChange={this.setCustomerId}
-                    >
-                        <option value="">
-                            {translations["general_customer"]}
-                        </option>
-                        {customers.map((cus) => (
-                            <option key={cus.id} value={cus.id}>
-                                {`${cus.first_name} ${cus.last_name}`}
-                            </option>
-                        ))}
-                    </select>
-
-                    {/* Cart Table */}
-                    <div
-                        style={{
-                            maxHeight: "400px",
-                            overflowY: "auto",
-                            marginBottom: "15px",
-                            border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
-                            borderRadius: "5px",
-                        }}
-                    >
-                        <table
-                            style={{
-                                width: "100%",
-                                borderCollapse: "collapse",
-                            }}
-                        >
-                            <thead style={tableHeaderStyle}>
-                                <tr>
-                                    <th
-                                        style={{
-                                            textAlign: "left",
-                                            padding: "8px",
-                                            fontSize: "14px",
-                                        }}
-                                    >
-                                        {translations["product_name"]}
-                                    </th>
-                                    <th
-                                        style={{
-                                            textAlign: "center",
-                                            padding: "8px",
-                                            fontSize: "14px",
-                                        }}
-                                    >
-                                        {translations["quantity"]}
-                                    </th>
-                                    <th
-                                        style={{
-                                            textAlign: "right",
-                                            padding: "8px",
-                                            fontSize: "14px",
-                                        }}
-                                    >
-                                        {translations["price"]}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cart.map((c) => (
-                                    <tr key={c.id}>
-                                        <td
-                                            style={{
-                                                textAlign: "left",
-                                                padding: "8px",
-                                                fontSize: "14px",
-                                            }}
-                                        >
-                                            {c.name}
-                                        </td>
-                                        <td
-                                            style={{
-                                                textAlign: "center",
-                                                padding: "8px",
-                                            }}
-                                        >
-                                            <input
-                                                type="text"
-                                                style={{
-                                                    ...inputStyle,
-                                                    width: "60px",
-                                                }}
-                                                value={c.pivot.quantity}
-                                                onChange={(event) =>
-                                                    this.handleChangeQty(
-                                                        c.id,
-                                                        event.target.value
-                                                    )
-                                                }
-                                            />
-                                            <button
-                                                style={{
-                                                    marginLeft: "5px",
-                                                    padding: "5px 10px",
-                                                    backgroundColor: "#dc3545",
-                                                    color: "#fff",
-                                                    border: "none",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                    fontSize: "14px",
-                                                }}
-                                                onClick={() =>
-                                                    this.handleClickDelete(c.id)
-                                                }
-                                            >
-                                                <i className="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                        <td
-                                            style={{
-                                                textAlign: "right",
-                                                padding: "8px",
-                                                fontSize: "14px",
-                                            }}
-                                        >
-                                            {window.APP.currency_symbol}{" "}
-                                            {(c.price * c.pivot.quantity).toFixed(
-                                                2
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Total and Buttons */}
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: "15px",
-                        }}
-                    >
+                        {/* Product Grid */}
                         <div
                             style={{
-                                fontSize: "16px",
-                                fontWeight: "bold",
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                                gap: "20px",
                             }}
                         >
-                            {translations["total"]}:
-                        </div>
-                        <div
-                            style={{
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            {window.APP.currency_symbol} {this.getTotal(cart)}
-                        </div>
-                    </div>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <button
-                            style={{
-                                ...buttonStyle,
-                                flex: 1,
-                                backgroundColor: "#dc3545",
-                                color: "#fff",
-                                marginRight: "10px",
-                            }}
-                            onClick={this.handleEmptyCart}
-                            disabled={!cart.length}
-                        >
-                            {translations["cancel"]}
-                        </button>
-                        <button
-                            style={{
-                                ...buttonStyle,
-                                flex: 1,
-                                backgroundColor: "#007bff",
-                                color: "#fff",
-                            }}
-                            disabled={!cart.length}
-                            onClick={this.handleClickSubmit}
-                        >
-                            {translations["checkout"]}
-                        </button>
-                    </div>
-                    {this.state.invoiceData && (
-                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                      <PDFDownloadLink
-                          document={<Invoice orderData={this.state.invoiceData} />}
-                          fileName={`invoice_${this.state.invoiceData.customer_id}.pdf`}
-                      >
-                          {({ loading }) => (
-                              <button style={{
-                                  padding: '8px 16px',
-                                  backgroundColor: '#28a745',
-                                  color: '#fff',
-                                  border: 'none',
-                                  borderRadius: 4,
-                                  cursor: 'pointer'
-                              }}>
-                                  {loading ? 'Generating...' : 'Download Invoice'}
-                              </button>
-                          )}
-                      </PDFDownloadLink>
-                  </div>
-                  
-                   
-                    )}
-                </div>
-
-                {/* Right Section */}
-                <div style={sectionStyle}>
-                    {/* Search Bar */}
-                    <input
-                        type="text"
-                        style={inputStyle}
-                        placeholder={translations["search_product"] + "..."}
-                        onChange={this.handleChangeSearch}
-                        onKeyDown={this.handleSeach}
-                    />
-
-                    {/* Product Grid */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-                            gap: "20px",
-                        }}
-                    >
-                        {products.map((p) => (
-                            <div
-                                key={p.id}
-                                onClick={() => this.addProductToCart(p.barcode)}
-                                style={{
-                                    border: isDarkMode
-                                        ? "1px solid #444"
-                                        : "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    padding: "10px",
-                                    textAlign: "center",
-                                    cursor: "pointer",
-                                    transition: "transform 0.2s",
-                                    backgroundColor: isDarkMode ? "#333" : "#ffffff",
-                                    color: isDarkMode ? "#ffffff" : "#000000",
-                                }}
-                                onMouseEnter={(e) =>
-                                    (e.currentTarget.style.transform = "scale(1.05)")
-                                }
-                                onMouseLeave={(e) =>
-                                    (e.currentTarget.style.transform = "scale(1)")
-                                }
-                            >
-                                <img
-                                    src={p.image_url}
-                                    alt={p.name}
+                            {products.map((p) => (
+                                <div
+                                    key={p.id}
+                                    onClick={() => this.addProductToCart(p.barcode)}
                                     style={{
-                                        width: "100%",
-                                        height: "100px",
-                                        objectFit: "cover",
-                                        borderRadius: "5px",
+                                        border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
+                                        borderRadius: "10px",
+                                        padding: "10px",
+                                        textAlign: "center",
+                                        cursor: "pointer",
+                                        transition: "transform 0.2s",
+                                        backgroundColor: isDarkMode ? "#333" : "#ffffff",
+                                        color: isDarkMode ? "#ffffff" : "#000000",
                                     }}
-                                />
-                                <h5
-                                    style={{
-                                        marginTop: "10px",
-                                        fontSize: "14px",
-                                        color:
-                                            window.APP.warning_quantity > p.quantity
-                                                ? "red"
-                                                : isDarkMode
-                                                ? "#ffffff"
-                                                : "#000000",
-                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.transform = "scale(1.05)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.transform = "scale(1)")
+                                    }
                                 >
-                                    {p.name} ({p.quantity})
-                                </h5>
-                            </div>
-                        ))}
+                                    <img
+                                        src={p.image_url}
+                                        alt={p.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            borderRadius: "5px",
+                                        }}
+                                    />
+                                    <h5
+                                        style={{
+                                            marginTop: "10px",
+                                            fontSize: "14px",
+                                            color:
+                                                window.APP.warning_quantity > p.quantity
+                                                    ? "red"
+                                                    : isDarkMode
+                                                    ? "#ffffff"
+                                                    : "#000000",
+                                        }}
+                                    >
+                                        {p.name} ({p.quantity})
+                                    </h5>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 }
