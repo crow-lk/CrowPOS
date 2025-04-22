@@ -26,6 +26,7 @@ return [
     'ID'                => 'ID',
     'Customer_Name'     => 'Customer Name',
     'Total'             => 'Total',
+    'Discount'             => 'Discount',
     'Received_Amount'   => 'Received Amount',
     'Status'            => 'Status',
     'To_Pay'            => 'To Pay',

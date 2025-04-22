@@ -13,6 +13,7 @@ class Cart extends Component {
             cart: [],
             products: [],
             customers: [],
+            discounts: {},
             barcode: "",
             search: "",
             customer_id: "",
@@ -115,8 +116,34 @@ class Cart extends Component {
     }
 
     getTotal(cart) {
-        const total = cart.map((c) => c.pivot.quantity * c.price);
+        const total = cart.map((c) => {
+            const discount = parseFloat(this.state.discounts[c.id]) || 0;
+            const itemTotal = c.pivot.quantity * c.price;
+            return itemTotal - discount; // Subtract discount from item total
+        });
         return sum(total).toFixed(2);
+    }
+
+    getSubTotal(cart) {
+        const total = cart.map((c) => {
+            const itemTotal = c.pivot.quantity * c.price;
+            return itemTotal; // Subtract discount from item total
+        });
+        return sum(total).toFixed(2);
+    }
+
+    getDiscount(cart) {
+        const discount = cart.map((c) => {
+            const itemDiscount = parseFloat(this.state.discounts[c.id]) || 0;
+            return itemDiscount;
+        });
+        return sum(discount).toFixed(2);
+    }
+
+    // New method to calculate item total with discount
+    calculateItemTotal(item) {
+        const itemTotal = item.pivot.quantity * item.price;
+        return itemTotal;
     }
 
     handleClickDelete(product_id) {
@@ -186,7 +213,13 @@ class Cart extends Component {
         this.setState({ showInvoice: false });
     };
 
+    handleDiscountChange(product_id, discount) {
+        const discounts = { ...this.state.discounts, [product_id]: discount };
+        this.setState({ discounts });
+    }
+
     handleClickSubmit() {
+        const discounts = this.state.discounts; // Get discounts from state
         Swal.fire({
             title: this.state.translations["received_amount"],
             input: "text",
@@ -197,12 +230,14 @@ class Cart extends Component {
             showLoaderOnConfirm: true,
             preConfirm: (amount) => {
                 const totalAmount = this.getTotal(this.state.cart);
+                const subTotal = this.getSubTotal(this.state.cart);
                 const receivedAmount = parseFloat(amount);
                 const balance = receivedAmount - totalAmount;
 
                 return axios.post("/admin/orders", {
                     customer_id: this.state.customer_id,
                     amount: totalAmount,
+                    discounts: discounts, // Send discounts with the request
                 })
                 .then((res) => {
                     const { order, order_id } = res.data;
@@ -214,13 +249,14 @@ class Cart extends Component {
                             order_id,
                             customer: order.customer,
                             amount: totalAmount,
+                            subTotal: subTotal,
+                            discounts: discounts,
                             receivedAmount,
                             balance,
                             cart: this.state.cart,
                         },
                     });
 
-                    // Show confirmation dialog
                     return Swal.fire({
                         title: this.state.translations["invoice_ready"],
                         text: this.state.translations["view_invoice"],
@@ -230,9 +266,8 @@ class Cart extends Component {
                         showCancelButton: true,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            this.setState({ showInvoice: true }); // Show the invoice after confirmation
+                            this.setState({ showInvoice: true });
                         }
-                        {/* PDF Viewer for Invoice */}
                     });
                 })
                 .catch((err) => {
@@ -378,6 +413,9 @@ class Cart extends Component {
                                         <th style={{ textAlign: "center", padding: "8px", fontSize: "14px" }}>
                                             {translations["quantity"]}
                                         </th>
+                                        <th style={{ textAlign: "center", padding: "8px", fontSize: "14px" }}>
+                                            {translations["discount"]}
+                                        </th>
                                         <th style={{ textAlign: "right", padding: "8px", fontSize: "14px" }}>
                                             {translations["price"]}
                                         </th>
@@ -412,8 +450,17 @@ class Cart extends Component {
                                                     <i className="fas fa-trash"></i>
                                                 </button>
                                             </td>
+                                            <td style={{ textAlign: "center", padding: "8px" }}>
+                                                <input
+                                                    type="text"
+                                                    style={{ ...inputStyle, width: "60px", marginLeft: "5px" }}
+                                                    placeholder="Discount"
+                                                    value={this.state.discounts[c.id] || ""}
+                                                    onChange={(event) => this.handleDiscountChange(c.id, event.target.value)}
+                                                />
+                                            </td>
                                             <td style={{ textAlign: "right", padding: "8px", fontSize: "14px" }}>
-                                                {window.APP.currency_symbol} {(c.price * c.pivot.quantity).toFixed(2)}
+                                                {window.APP.currency_symbol} {this.calculateItemTotal(c).toFixed(2)}
                                             </td>
                                         </tr>
                                     ))}
@@ -422,6 +469,22 @@ class Cart extends Component {
                         </div>
 
                         {/* Total and Buttons */}
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {translations["subtotal"]}:
+                            </div>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {window.APP.currency_symbol} {this.getSubTotal(cart)}
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {translations["discountamount"]}:
+                            </div>
+                            <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                                {window.APP.currency_symbol} {this.getDiscount(cart)}
+                            </div>
+                        </div>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
                             <div style={{ fontSize: "16px", fontWeight: "bold" }}>
                                 {translations["total"]}:

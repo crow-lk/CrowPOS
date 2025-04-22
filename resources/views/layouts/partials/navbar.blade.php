@@ -60,19 +60,42 @@
       </div>
     </li>
 
-    <!-- User Profile -->
-    <li class="nav-item ">
-      <div class="user-panel mt-1 pb-1 d-flex">
-        <div class="image">
-         <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
-
-
+    <!-- Notifications Dropdown Menu -->
+    <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+            <div class="user-panel pb-2 d-flex">
+                <div class="image">
+                    <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
+                </div>
+                <div class="info">
+                    {{ auth()->user()->getFullname() }}
+                </div>
+            </div>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="p-5">PROFILE</span>
+          <div class="dropdown-divider"></div>
+          <div class="user-panel pb-2 pt-2 d-flex">
+            <div class="image">
+                <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-1" alt="User Image">
+            </div>
+            <div class="info">
+                {{ auth()->user()->getFullname() }}
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="user-panel pb-2 d-flex">
+            <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
+                <div class="info">
+                    <p><i class="nav-icon fas fa-sign-out-alt"></i>{{ __('common.Logout') }}</p>
+                    <form action="{{route('logout')}}" method="POST" id="logout-form">
+                        @csrf
+                    </form>
+                </div>
+            </a>
+          </div>
         </div>
-        <div class="info">
-          <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
-        </div>
-      </div>
-    </li>
+      </li>
   </ul>
 </nav>
 <!-- /.navbar -->

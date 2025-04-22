@@ -29,13 +29,14 @@
         <div class="table-responsive">
     <table class="table table-hover align-middle shadow-lg rounded"
         style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%; margin-top:3px;">
-        
+
         <!-- Table Head with Updated Styles -->
         <thead style="background: #2C3E50; color: white;">
             <tr>
                 <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('order.ID') }}</th>
                 <th class="text-start px-4 py-3">{{ __('order.Customer_Name') }}</th>
                 <th class="text-center px-4 py-3">{{ __('order.Total') }}</th>
+                <th class="text-center px-4 py-3">{{ __('order.Discount') }}</th>
                 <th class="text-center px-4 py-3">{{ __('order.Received_Amount') }}</th>
                 <th class="text-center px-4 py-3">{{ __('order.Status') }}</th>
                 <th class="text-center px-4 py-3">{{ __('order.To_Pay') }}</th>
@@ -49,7 +50,8 @@
             <tr class="transition" style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
                 <td class="text-center fw-bold px-4 py-3 ">{{$order->id}}</td>
                 <td class="text-start fw-semibold px-4 py-3 ">{{$order->getCustomerName()}}</td>
-                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedTotalAmount()}}</td>
+                <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedDiscount()}}</td>
                 <td class="text-center px-4 py-3 ">{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>
                 <td class="text-center px-4 py-3">
                     @if($order->receivedAmount() == 0)
@@ -70,6 +72,8 @@
                         data-order-id="{{ $order->id }}"
                         data-customer-name="{{ $order->getCustomerName() }}"
                         data-total="{{ $order->total() }}"
+                        data-sub-total="{{ $order->totalAmount() }}"
+                        data-discount="{{ $order->discount() }}"
                         data-received="{{ $order->receivedAmount() }}"
                         data-items="{{ json_encode($order->items) }}"
                         data-created-at="{{ $order->created_at }}"
@@ -123,6 +127,8 @@
         var orderId = button.data('order-id');
         var customerName = button.data('customer-name');
         var totalAmount = button.data('total');
+        var discount = button.data('discount');
+        var subTotal = button.data('sub-total');
         var receivedAmount = button.data('received');
         var payment = button.data('payment');
         var createdAt = button.data('created-at');
@@ -133,6 +139,8 @@
             orderId,
             customerName,
             totalAmount,
+            discount,
+            subTotal,
             receivedAmount,
             createdAt,
             items
@@ -153,9 +161,9 @@
                 <td>${index + 1}</td>
                 <td>${item.product.name}</td>
                 <td>${item.description || 'N/A'}</td>
-                <td>${parseFloat(item.product.price).toFixed(2)}</td>
+                <td class="text-right">${parseFloat(item.product.price).toFixed(2)}</td>
                 <td>${item.quantity}</td>
-                <td>${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</td>
+                <td class="text-right">${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</td>
             </tr>
         `;
             });
@@ -193,9 +201,9 @@
                             <th>#</th>
                             <th>Item</th>
                             <th>Description</th>
-                            <th>Unit Cost</th>
+                            <th class="text-right">Unit Cost</th>
                             <th>Qty</th>
-                            <th>Total</th>
+                            <th class="text-right">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -204,19 +212,35 @@
                     <tfoot>
                       <tr>
                         <th class="text-right" colspan="5">
-                          Total
+                          Sub-Total:
                         </th>
-                        <th class="right">
-                          <strong>{{config('settings.currency_symbol')}} ${totalAmount}</strong>
+                        <th class="right text-right">
+                          <strong>{{config('settings.currency_symbol')}} ${parseFloat(subTotal).toFixed(2)}</strong>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th class="text-right" colspan="5">
+                          Discounted Amount:
+                        </th>
+                        <th class="right text-right">
+                          <strong>{{config('settings.currency_symbol')}} ${parseFloat(discount).toFixed(2)}</strong>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th class="text-right" colspan="5">
+                          Total:
+                        </th>
+                        <th class="right text-right">
+                          <strong>{{config('settings.currency_symbol')}} ${parseFloat(totalAmount).toFixed(2)}</strong>
                         </th>
                       </tr>
 
                       <tr>
                         <th class="text-right" colspan="5">
-                          Paid
+                          Paid:
                         </th>
-                        <th class="right">
-                          <strong>{{config('settings.currency_symbol')}} ${receivedAmount}</strong>
+                        <th class="right text-right">
+                          <strong>{{config('settings.currency_symbol')}} ${parseFloat(receivedAmount).toFixed(2)}</strong>
                         </th>
                       </tr>
                     </tfood>

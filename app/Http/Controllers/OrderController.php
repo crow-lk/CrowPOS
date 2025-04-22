@@ -41,10 +41,12 @@ class OrderController extends Controller
 
         $cart = $request->user()->cart()->get();
         foreach ($cart as $item) {
+            $discount = $request->discounts[$item->id] ?? 0; // Get discount from request
             $order->items()->create([
                 'price' => $item->price * $item->pivot->quantity,
                 'quantity' => $item->pivot->quantity,
                 'product_id' => $item->id,
+                'discount' => $discount, // Save discount
             ]);
             $item->quantity = $item->quantity - $item->pivot->quantity;
             $item->save();
@@ -54,15 +56,13 @@ class OrderController extends Controller
             'amount' => $request->amount,
             'user_id' => $request->user()->id,
         ]);
-        
+
         return response()->json([
-            'order' => $order->load('customer'), // now includes customer details
+            'order' => $order->load('customer'),
             'order_id' => $order->id,
         ]);
-        
-        
-
     }
+
     public function partialPayment(Request $request)
     {
         // return $request;
