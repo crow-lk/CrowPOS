@@ -29,10 +29,11 @@
             <tr>
                 <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">#</th>
                 <th class="text-start px-4 py-3">{{ __('product.Name') }}</th>
+                <th class="text-center px-4 py-3">{{ __('product.Type') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Image') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Barcode') }}</th>
-                <th class="text-center px-4 py-3">{{ __('product.Price') }}</th>
-                <th class="text-center px-4 py-3">{{ __('product.Quantity') }}</th>
+                <th class="text-right px-4 py-3">{{ __('product.Price') }}</th>
+                <th class="text-right px-4 py-3">{{ __('product.Quantity') }}</th>
 
                 <th class="text-center px-4 py-3">{{ __('product.Status') }}</th>
                 <th class="text-center px-4 py-3">{{ __('product.Created_At') }}</th>
@@ -48,20 +49,21 @@
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
 
                 <td class="text-center px-4 py-3">{{ $product->id }}</td>
-                <td class="text-center px-4 py-3">{{ $product->name }}</td>
+                <td class="text-start px-4 py-3">{{ $product->name }}</td>
+                <td class="text-center px-4 py-3">{{ $product->type }}</td>
                 <td class="text-center px-4 py-3">
                     {{-- <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;"> --}}
                     {{-- if no image can be found use N/A --}}
                     @if ($product->image)
                     <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
                     @else
-                    {{ __('Image N/A') }}
+                    {{ __('N/A') }}
                     @endif
 
                 </td>
-                <td class="text-center px-4 py-3">{{ $product->barcode }}</td>
-                <td class="text-center px-4 py-3">{{ number_format($product->price, 2) }}</td>
-                <td class="text-center px-4 py-3">{{ $product->quantity }}</td>
+                <td class="text-center px-4 py-3">{{ $product->barcode ?? 'N/A' }}</td>
+                <td class="text-right px-4 py-3">{{ number_format($product->price, 2) }}</td>
+                <td class="text-right px-4 py-3">{{ $product->quantity }}</td>
 
                 <td class="text-center px-4 py-3">
                     <span class="badge badge-{{ $product->status ? 'success' : 'danger' }}">

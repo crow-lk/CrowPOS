@@ -8,7 +8,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductTypeController;
-use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StockMovementController;
@@ -31,7 +30,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('productTypes', ProductTypeController::class);
     Route::resource('brands', BrandController::class);
     Route::resource('stock_movements', StockMovementController::class);
-    Route::resource('services', ServiceController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('suppliers', SupplierController::class);

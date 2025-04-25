@@ -65,14 +65,6 @@
                     </ul>
                 </li>
 
-                <!-- Services -->
-                <li class="nav-item">
-                    <a href="{{ route('services.index') }}" class="nav-link {{ activeSegment('services') }}">
-                        <i class="nav-icon fas fa-clone"></i>
-                        <p>{{ __('service.title') }}</p>
-                    </a>
-                </li>
-
                 <!-- Cart -->
                 <li class="nav-item">
                     <a href="{{ route('cart.index') }}" class="nav-link {{ activeSegment('cart') }}">

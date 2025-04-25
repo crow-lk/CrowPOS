@@ -29,9 +29,9 @@ class HomeController extends Controller
         $orders = Order::with(['items', 'payments'])->get();
         $customers_count = Customer::count();
 
-        $low_stock_products = Product::where('quantity', '<', 10)->get();
+        $low_stock_products = Product::where('type', 'product')->where('quantity', '<', 10)->get();
 
-        $bestSellingProducts = DB::table('products')
+        $bestSellingProducts = DB::table('products')->where('type', 'product')
             ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
             ->join('order_items', 'order_items.product_id', '=', 'products.id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -39,7 +39,7 @@ class HomeController extends Controller
             ->havingRaw('SUM(order_items.quantity) > 10')
             ->get();
 
-        $currentMonthBestSelling = DB::table('products')
+        $currentMonthBestSelling = DB::table('products')->where('type', 'product')
             ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
             ->join('order_items', 'order_items.product_id', '=', 'products.id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -49,7 +49,7 @@ class HomeController extends Controller
             ->havingRaw('SUM(order_items.quantity) > 500')  // Best-selling threshold for the current month
             ->get();
 
-        $pastSixMonthsHotProducts = DB::table('products')
+        $pastSixMonthsHotProducts = DB::table('products')->where('type', 'product')
             ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
             ->join('order_items', 'order_items.product_id', '=', 'products.id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')

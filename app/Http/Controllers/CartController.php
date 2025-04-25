@@ -19,9 +19,7 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'barcode' => 'required|exists:products,barcode',
-        ]);
+
         $barcode = $request->barcode;
 
         $product = Product::where('barcode', $barcode)->first();

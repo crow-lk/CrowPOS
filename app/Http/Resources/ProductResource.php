@@ -29,6 +29,7 @@ class ProductResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at,
             'image_url' => $this->getImageUrl(),
+            'type'  => $this->type,
         ];
     }
 }

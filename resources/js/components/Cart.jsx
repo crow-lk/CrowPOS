@@ -101,7 +101,7 @@ class Cart extends Component {
 
     handleChangeQty(product_id, qty) {
         const cart = this.state.cart.map((c) => {
-            if (c.id === product_id) {
+            if (product && product.type === "product") {
                 c.pivot.quantity = qty;
             }
             return c;
@@ -218,6 +218,16 @@ class Cart extends Component {
         this.setState({ discounts });
     }
 
+    handleChange(product_id, newPrice) {
+        const cart = this.state.cart.map((c) => {
+            if (c.id === product_id) {
+                c.price = parseFloat(newPrice) || 0; // Update the price
+            }
+            return c;
+        });
+        this.setState({ cart });
+    }
+
     handleClickSubmit() {
         const discounts = this.state.discounts; // Get discounts from state
         Swal.fire({
@@ -234,10 +244,17 @@ class Cart extends Component {
                 const receivedAmount = parseFloat(amount);
                 const balance = receivedAmount - totalAmount;
 
+                const orderItems = this.state.cart.map(item => ({
+                    product_id: item.id,
+                    price: item.price, // Use the updated price
+                        quantity: item.pivot.quantity,
+                        discount: discounts[item.id] || 0, // Include discount
+                    }));
+
                 return axios.post("/admin/orders", {
                     customer_id: this.state.customer_id,
                     amount: totalAmount,
-                    discounts: discounts, // Send discounts with the request
+                    items: orderItems, // Send order items with the request
                 })
                 .then((res) => {
                     const { order, order_id } = res.data;
@@ -428,27 +445,33 @@ class Cart extends Component {
                                                 {c.name}
                                             </td>
                                             <td style={{ textAlign: "center", padding: "8px" }}>
-                                                <input
-                                                    type="text"
-                                                    style={{ ...inputStyle, width: "60px" }}
-                                                    value={c.pivot.quantity}
-                                                    onChange={(event) => this.handleChangeQty(c.id, event.target.value)}
-                                                />
-                                                <button
-                                                    style={{
-                                                        marginLeft: "5px",
-                                                        padding: "5px 10px",
-                                                        backgroundColor: "#dc3545",
-                                                        color: "#fff",
-                                                        border: "none",
-                                                        borderRadius: "5px",
-                                                        cursor: "pointer",
-                                                        fontSize: "14px",
-                                                    }}
-                                                    onClick={() => this.handleClickDelete(c.id)}
-                                                >
-                                                    <i className="fas fa-trash"></i>
-                                                </button>
+                                                {c.type === "product" ? ( // Only show input for products
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            style={{ ...inputStyle, width: "60px" }}
+                                                            value={c.pivot.quantity}
+                                                            onChange={(event) => this.handleChangeQty(c.id, event.target.value)}
+                                                        />
+                                                        <button
+                                                            style={{
+                                                                marginLeft: "5px",
+                                                                padding: "5px 10px",
+                                                                backgroundColor: "#dc3545",
+                                                                color: "#fff",
+                                                                border: "none",
+                                                                borderRadius: "5px",
+                                                                cursor: "pointer",
+                                                                fontSize: "14px",
+                                                            }}
+                                                            onClick={() => this.handleClickDelete(c.id)}
+                                                        >
+                                                            <i className="fas fa-trash"></i>
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <span>{c.pivot.quantity}</span> // Display quantity as text for services
+                                                )}
                                             </td>
                                             <td style={{ textAlign: "center", padding: "8px" }}>
                                                 <input
@@ -459,8 +482,13 @@ class Cart extends Component {
                                                     onChange={(event) => this.handleDiscountChange(c.id, event.target.value)}
                                                 />
                                             </td>
-                                            <td style={{ textAlign: "right", padding: "8px", fontSize: "14px" }}>
-                                                {window.APP.currency_symbol} {this.calculateItemTotal(c).toFixed(2)}
+                                            <td style={{ textAlign: "right", padding: "5px", fontSize: "14px" }}>
+                                                <input
+                                                    type="number"
+                                                    style={{ ...inputStyle, width: "100px", marginLeft: "5px" }}
+                                                    value={this.calculateItemTotal(c).toFixed(2)}
+                                                    onChange={(event) => this.handleChange(c.id, event.target.value)}
+                                                />
                                             </td>
                                         </tr>
                                     ))}
@@ -533,62 +561,126 @@ class Cart extends Component {
                             onKeyDown={this.handleSeach}
                         />
 
-                        {/* Product Grid */}
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-                                gap: "20px",
-                            }}
-                        >
-                            {products.map((p) => (
+                        {/* Product and Service Grid */}
+                        <div>
+                        {/* Products Section */}
+                        {products.filter((p) => p.type === "product").length > 0 && (
+                            <>
+                                <h2>Products</h2>
                                 <div
-                                    key={p.id}
-                                    onClick={() => this.addProductToCart(p.barcode)}
                                     style={{
-                                        border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
-                                        borderRadius: "10px",
-                                        padding: "10px",
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                        transition: "transform 0.2s",
-                                        backgroundColor: isDarkMode ? "#333" : "#ffffff",
-                                        color: isDarkMode ? "#ffffff" : "#000000",
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                                        gap: "20px",
                                     }}
-                                    onMouseEnter={(e) =>
-                                        (e.currentTarget.style.transform = "scale(1.05)")
-                                    }
-                                    onMouseLeave={(e) =>
-                                        (e.currentTarget.style.transform = "scale(1)")
-                                    }
                                 >
-                                    <img
-                                        src={p.image_url}
-                                        alt={p.name}
-                                        style={{
-                                            width: "100%",
-                                            height: "100px",
-                                            objectFit: "cover",
-                                            borderRadius: "5px",
-                                        }}
-                                    />
-                                    <h5
-                                        style={{
-                                            marginTop: "10px",
-                                            fontSize: "14px",
-                                            color:
-                                                window.APP.warning_quantity > p.quantity
-                                                    ? "red"
-                                                    : isDarkMode
-                                                    ? "#ffffff"
-                                                    : "#000000",
-                                        }}
-                                    >
-                                        {p.name} ({p.quantity})
-                                    </h5>
+                                    {products
+                                        .filter((p) => p.type === "product")
+                                        .map((p) => (
+                                            <div
+                                                key={p.id}
+                                                onClick={() => this.addProductToCart(p.barcode)}
+                                                style={{
+                                                    border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
+                                                    borderRadius: "10px",
+                                                    padding: "10px",
+                                                    textAlign: "center",
+                                                    cursor: "pointer",
+                                                    transition: "transform 0.2s",
+                                                    backgroundColor: isDarkMode ? "#333" : "#ffffff",
+                                                    color: isDarkMode ? "#ffffff" : "#000000",
+                                                }}
+                                                onMouseEnter={(e) =>
+                                                    (e.currentTarget.style.transform = "scale(1.05)")
+                                                }
+                                                onMouseLeave={(e) =>
+                                                    (e.currentTarget.style.transform = "scale(1)")
+                                                }
+                                            >
+                                                <img
+                                                    src={p.image_url}
+                                                    alt={p.name}
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100px",
+                                                        objectFit: "cover",
+                                                        borderRadius: "5px",
+                                                    }}
+                                                />
+                                                <h5
+                                                    style={{
+                                                        marginTop: "10px",
+                                                        fontSize: "14px",
+                                                        color:
+                                                            window.APP.warning_quantity > p.quantity
+                                                                ? "red"
+                                                                : isDarkMode
+                                                                ? "#ffffff"
+                                                                : "#000000",
+                                                    }}
+                                                >
+                                                    {p.name} ({p.quantity})
+                                                </h5>
+                                            </div>
+                                        ))}
                                 </div>
-                            ))}
-                        </div>
+                            </>
+                        )}
+
+                        {/* Services Section */}
+                        {products.filter((p) => p.type === "service").length > 0 && (
+                            <>
+                                <h2>Services</h2>
+                                <div
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                                        gap: "20px",
+                                    }}
+                                >
+                                    {products
+                                        .filter((p) => p.type === "service")
+                                        .map((p) => (
+                                            <div
+                                                key={p.id}
+                                                onClick={() => this.addProductToCart(p.barcode)}
+                                                style={{
+                                                    border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
+                                                    borderRadius: "10px",
+                                                    padding: "10px",
+                                                    textAlign: "center",
+                                                    cursor: "pointer",
+                                                    transition: "transform 0.2s",
+                                                    backgroundColor: isDarkMode ? "#333" : "#ffffff",
+                                                    color: isDarkMode ? "#ffffff" : "#000000",
+                                                }}
+                                                onMouseEnter={(e) =>
+                                                    (e.currentTarget.style.transform = "scale(1.05)")
+                                                }
+                                                onMouseLeave={(e) =>
+                                                    (e.currentTarget.style.transform = "scale(1)")
+                                                }
+                                            >
+                                                <h5
+                                                    style={{
+                                                        marginTop: "10px",
+                                                        fontSize: "14px",
+                                                        color:
+                                                            window.APP.warning_quantity > p.quantity
+                                                                ? "red"
+                                                                : isDarkMode
+                                                                ? "#ffffff"
+                                                                : "#000000",
+                                                    }}
+                                                >
+                                                    {p.name}
+                                                </h5>
+                                            </div>
+                                        ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                     </div>
                 </div>
             </>

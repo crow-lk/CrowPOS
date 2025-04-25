@@ -47,7 +47,7 @@ class ProductController extends Controller
         $suppliers = Supplier::all(); // Fetch all suppliers
         return view('products.create', compact('categories', 'productTypes', 'brands', 'suppliers'));
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -58,6 +58,7 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         $image_path = '';
+        $type = $request->input('type');
 
         if ($request->hasFile('image')) {
             $image_path = $request->file('image')->store('products', 'public');
@@ -74,7 +75,8 @@ class ProductController extends Controller
             'barcode' => $request->barcode,
             'price' => $request->price,
             'quantity' => $request->quantity,
-            'status' => $request->status
+            'status' => $request->status,
+            'type' => $type,
         ]);
 
         if (!$product) {
@@ -129,7 +131,8 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->quantity = $request->quantity;
         $product->status = $request->status;
-        
+        $product->type = $request->type;
+
 
 
         if ($request->hasFile('image')) {

@@ -28,14 +28,14 @@ class ProductStoreRequest extends FormRequest
             'description' => 'nullable|string',
             'category_id' => 'required|integer|exists:categories,id',
             'product_type_id' => 'required|integer|exists:product_types,id',
-            'brand_id' => 'required|integer|exists:brands,id',
+            'brand_id' => 'nullable|integer|exists:brands,id',
             'image' => 'nullable|image',
-            'barcode' => 'required|string|max:50|unique:products',
-            'price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
-            'supplier_id' => 'integer|exists:suppliers,id', 
+            'barcode' => 'nullable|string|max:50',
+            'price' => 'regex:/^\d+(\.\d{1,2})?$/',
+            'supplier_id' => 'nullable|integer|exists:suppliers,id',
             'quantity' => 'required|integer',
             'status' => 'required|boolean',
-
+            'type' => 'required|in:product,service',
         ];
     }
 }

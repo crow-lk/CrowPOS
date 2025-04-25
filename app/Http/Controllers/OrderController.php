@@ -39,18 +39,17 @@ class OrderController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        $cart = $request->user()->cart()->get();
-        foreach ($cart as $item) {
-            $discount = $request->discounts[$item->id] ?? 0; // Get discount from request
+        // Loop through the items sent from the frontend
+        foreach ($request->items as $itemData) {
             $order->items()->create([
-                'price' => $item->price * $item->pivot->quantity,
-                'quantity' => $item->pivot->quantity,
-                'product_id' => $item->id,
-                'discount' => $discount, // Save discount
+                'price' => $itemData['price'], // Use the updated price
+                'quantity' => $itemData['quantity'],
+                'product_id' => $itemData['product_id'],
+                'discount' => $itemData['discount'], // Save discount
             ]);
-            $item->quantity = $item->quantity - $item->pivot->quantity;
-            $item->save();
         }
+
+        // Clear the cart after creating the order
         $request->user()->cart()->detach();
         $order->payments()->create([
             'amount' => $request->amount,

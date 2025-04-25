@@ -12,6 +12,18 @@
             @csrf
 
             <div class="form-group">
+                <label>{{ __('product.Type') }}</label>
+                <div>
+                    <input type="radio" id="is_product" name="type" value="product" onchange="toggleFields()" checked>
+                    <label for="is_product">{{ __('product.Product') }}</label>
+                </div>
+                <div>
+                    <input type="radio" id="is_service" name="type" value="service" onchange="toggleFields()">
+                    <label for="is_service">{{ __('product.Service') }}</label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="name">{{ __('product.Name') }}</label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name"
                     placeholder="{{ __('product.Name') }}" value="{{ old('name') }}">
@@ -21,7 +33,6 @@
                 </span>
                 @enderror
             </div>
-
 
             <div class="form-group">
                 <label for="description">{{ __('product.Description') }}</label>
@@ -68,7 +79,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="brandField">
                 <label for="brand_id">{{ __('product.Brand') }}</label>
                 <select name="brand_id" id="brand_id" class="form-control @error('brand_id') is-invalid @enderror">
                     <option value="">{{ __('product.Select_Brand') }}</option>
@@ -85,11 +96,10 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="imageField">
                 <label for="image">{{ __('product.Image') }}</label>
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" name="image" id="image">
-                    <label class="custom-file-label" for="image">{{ __('product.Choose_file') }}</label>
+                    <input type="file" class="form-control @error('image') is-invalid @enderror" name="image" id="image">
                 </div>
                 @error('image')
                 <span class="invalid-feedback" role="alert">
@@ -98,7 +108,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="barcodeField">
                 <label for="barcode">{{ __('product.Barcode') }}</label>
                 <input type="text" name="barcode" class="form-control @error('barcode') is-invalid @enderror"
                     id="barcode" placeholder="{{ __('product.Barcode') }}" value="{{ old('barcode') }}">
@@ -119,25 +129,24 @@
                 </span>
                 @enderror
             </div>
-            <div class="form-group">
-    <label for="supplier_id">{{ __('product.Supplier') }}</label>
-    <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
-        <option value="" disabled selected>{{ __('product.Select_Supplier') }}</option>
-        @foreach($suppliers as $supplier)
-            <option value="{{ $supplier->id }}"
-                {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
-                {{ $supplier->first_name }} {{ $supplier->last_name }}
-            </option>
-        @endforeach
-    </select>
-    @error('supplier_id')
-    <span class="invalid-feedback" role="alert">
-        <strong>{{ $message }}</strong>
-    </span>
-    @enderror
-</div>
 
-
+            <div class="form-group" id="supplierField">
+                <label for="supplier_id">{{ __('product.Supplier') }}</label>
+                <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
+                    <option value="" disabled selected>{{ __('product.Select_Supplier') }}</option>
+                    @foreach($suppliers as $supplier)
+                        <option value="{{ $supplier->id }}"
+                            {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
+                            {{ $supplier->first_name }} {{ $supplier->last_name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('supplier_id')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
 
             <div class="form-group">
                 <label for="quantity">{{ __('product.Quantity') }}</label>
@@ -167,39 +176,29 @@
         </form>
     </div>
 </div>
+
 @endsection
 
 @section('js')
 <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#category_id').change(function() {
-            var categoryId = $(this).val();
-            $('#product_type_id').empty().append('<option value="">{{ __('product.Select_Product_Type') }}</option>').prop('disabled', true);
+    function toggleFields() {
+        const isProductChecked = document.getElementById('is_product').checked;
+        const isServiceChecked = document.getElementById('is_service').checked;
 
-            if (categoryId) {
-                $.ajax({
-                    url: '/product-types/' + categoryId,
-                    type: 'GET',
-                    success: function(data) {
-                        if (data.length > 0) {
-                            $.each(data, function(index, productType) {
-                                $('#product_type_id').append('<option value="' + productType.id + '">' + productType.name + '</option>');
-                            });
-                            $('#product_type_id').prop('disabled', false); // Enable the dropdown
-                        } else {
-                            $('#product_type_id').prop('disabled', true); // Disable if no product types found
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText); // Log any errors
-                    }
-                });
-            } else {
-                $('#product_type_id').prop('disabled', true); // Disable if no category is selected
-            }
-        });
-    });
-</script> --}}
+        // Ensure only one checkbox can be checked at a time
+        if (isProductChecked) {
+            document.getElementById('is_service').checked = false;
+        } else if (isServiceChecked) {
+            document.getElementById('is_product').checked = false;
+        }
+
+        // Show/hide fields based on selection
+        const isService = isServiceChecked;
+        document.getElementById('imageField').style.display = isService ? 'none' : 'block';
+        document.getElementById('barcodeField').style.display = isService ? 'none' : 'block';
+        document.getElementById('brandField').style.display = isService ? 'none' : 'block';
+        document.getElementById('supplierField').style.display = isService ? 'none' : 'block';
+    }
+</script>
 @endsection

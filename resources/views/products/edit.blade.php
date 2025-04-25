@@ -13,6 +13,18 @@
             @method('PUT')
 
             <div class="form-group">
+                <label>{{ __('product.Type') }}</label>
+                <div>
+                    <input type="radio" id="is_product" name="type" value="product" {{ old('type', $product->type) == 'product' ? 'checked' : '' }} onchange="toggleFields()">
+                    <label for="is_product">{{ __('product.Product') }}</label>
+                </div>
+                <div>
+                    <input type="radio" id="is_service" name="type" value="service" {{ old('type', $product->type) == 'service' ? 'checked' : '' }} onchange="toggleFields()">
+                    <label for="is_service">{{ __('product.Service') }}</label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="name">{{ __('product.Name') }}</label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name"
                     placeholder="{{ __('product.Name') }}" value="{{ old('name', $product->name) }}">
@@ -71,7 +83,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="brandField">
                 <label for="brand_id">{{ __('product.Brand') }}</label>
                 <select name="brand_id" id="brand_id" class="form-control @error('brand_id') is-invalid @enderror">
                     <option value="">{{ __('product.Select_Brand') }}</option>
@@ -88,7 +100,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="imageField">
                 <label for="image">{{ __('product.Image') }}</label>
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" name="image" id="image">
@@ -101,7 +113,7 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="barcodeField">
                 <label for="barcode">{{ __('product.Barcode') }}</label>
                 <input type="text" name="barcode" class="form-control @error('barcode') is-invalid @enderror"
                     id="barcode" placeholder="{{ __('product.Barcode') }}" value="{{ old('barcode', $product->barcode) }}">
@@ -122,23 +134,23 @@
                 </span>
                 @enderror
             </div>
-            <div class="form-group">
+            <div class="form-group" id="supplierField">
             <label for="supplier_id">{{ __('product.Supplier') }}</label>
-    <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
-        <option value="">{{ __('product.Select_Supplier') }}</option>
-        @foreach($suppliers as $supplier)
-        <option value="{{ $supplier->id }}"
-                {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
-                {{ $supplier->first_name }} {{ $supplier->last_name }}
-            </option>
-        @endforeach
-    </select>
-    @error('supplier_id')
-    <span class="invalid-feedback" role="alert">
-        <strong>{{ $message }}</strong>
-    </span>
-    @enderror
-</div>
+                <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
+                    <option value="">{{ __('product.Select_Supplier') }}</option>
+                    @foreach($suppliers as $supplier)
+                    <option value="{{ $supplier->id }}"
+                            {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
+                            {{ $supplier->first_name }} {{ $supplier->last_name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('supplier_id')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
 
 
 
@@ -178,6 +190,27 @@
 <script>
     $(document).ready(function () {
         bsCustomFileInput.init();
+        toggleFields();
     });
+</script>
+<script>
+    function toggleFields() {
+        const isProductChecked = document.getElementById('is_product').checked;
+        const isServiceChecked = document.getElementById('is_service').checked;
+
+        // Ensure only one checkbox can be checked at a time
+        if (isProductChecked) {
+            document.getElementById('is_service').checked = false;
+        } else if (isServiceChecked) {
+            document.getElementById('is_product').checked = false;
+        }
+
+        // Show/hide fields based on selection
+        const isService = isServiceChecked;
+        document.getElementById('imageField').style.display = isService ? 'none' : 'block';
+        document.getElementById('barcodeField').style.display = isService ? 'none' : 'block';
+        document.getElementById('brandField').style.display = isService ? 'none' : 'block';
+        document.getElementById('supplierField').style.display = isService ? 'none' : 'block';
+    }
 </script>
 @endsection
