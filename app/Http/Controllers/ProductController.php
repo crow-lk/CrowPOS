@@ -22,17 +22,22 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        $products = new Product();
-        if ($request->search) {
-            $products = $products->where('name', 'LIKE', "%{$request->search}%");
-        }
-        $products = $products->latest()->paginate(10);
-        if (request()->wantsJson()) {
-            return ProductResource::collection($products);
-        }
-        return view('products.index')->with('products', $products);
+{
+    $products = Product::query(); // Start a query on the Product model
+
+    if ($request->search) {
+        $products = $products->where('name', 'LIKE', "%{$request->search}%");
     }
+
+    $products = $products->latest()->get(); // Get all products without pagination
+
+    if (request()->wantsJson()) {
+        return ProductResource::collection($products);
+    }
+
+    return view('products.index')->with('products', $products);
+}
+
 
     /**
      * Show the form for creating a new resource.

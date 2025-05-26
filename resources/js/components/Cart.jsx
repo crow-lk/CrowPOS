@@ -569,6 +569,8 @@ class Cart extends Component {
                                 <h2>Products</h2>
                                 <div
                                     style={{
+                                        maxHeight: "350px", // Set a fixed height
+                                        overflowY: "auto",
                                         display: "grid",
                                         gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
                                         gap: "20px",
@@ -633,6 +635,8 @@ class Cart extends Component {
                                 <h2>Services</h2>
                                 <div
                                     style={{
+                                        maxHeight: "350px", // Set a fixed height
+                                        overflowY: "auto",
                                         display: "grid",
                                         gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
                                         gap: "20px",
