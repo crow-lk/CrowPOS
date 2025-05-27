@@ -14,6 +14,10 @@ class StockMovement extends Model
         'supplier_id',
         'products',
         'reason',
+        'cost_price',
+        'quantity',
+        'from_store_id',
+        'to_store_id',
     ];
 
     protected $casts = [
@@ -23,6 +27,15 @@ class StockMovement extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function toStore()
+    {
+        return $this->belongsTo(Store::class, 'to_store_id');
+    }
+    public function fromStore()
+    {
+        return $this->belongsTo(Store::class, 'from_store_id');
     }
 }
 

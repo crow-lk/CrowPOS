@@ -36,6 +36,7 @@ return [
     'products'         => 'Product',
     'reason'         => 'Reason',
     'Select_product'         => 'Select Product',
+    'Select_store'         => 'Select Store',
     'Select_supplier'         => 'Select Supplier',
     'Enter_reason'         => 'Enter Reason',
     'Update_StockMovement'   => 'Update StockMovement',
@@ -50,4 +51,6 @@ return [
     'error' => 'Error',
     'something_went_wrong' => 'Something went wrong. Please try again.',
     'ok' => 'OK',
+    'to' => 'To',
+    'from' => 'From',
 ];

@@ -89,6 +89,14 @@
                     </a>
                 </li>
 
+                <!-- Stores -->
+                <li class="nav-item">
+                    <a href="{{ route('stores.index') }}" class="nav-link {{ activeSegment('stores') }}">
+                        <i class="nav-icon fas fa-store"></i>
+                        <p>{{ __('store.title') }}</p>
+                    </a>
+                </li>
+
                 <!-- Suppliers -->
                 <li class="nav-item">
                     <a href="{{ route('suppliers.index') }}" class="nav-link {{ activeSegment('suppliers') }}">

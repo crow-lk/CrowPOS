@@ -133,7 +133,7 @@
             <div class="form-group" id="supplierField">
                 <label for="supplier_id">{{ __('product.Supplier') }}</label>
                 <select name="supplier_id" id="supplier_id" class="form-control @error('supplier_id') is-invalid @enderror">
-                    <option value="" disabled selected>{{ __('product.Select_Supplier') }}</option>
+                    <option value="">{{ __('product.Select_Supplier') }}</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}"
                             {{ old('supplier_id', isset($product) ? $product->supplier_id : '') == $supplier->id ? 'selected' : '' }}>
