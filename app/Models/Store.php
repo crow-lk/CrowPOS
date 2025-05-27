@@ -9,6 +9,7 @@ class Store extends Model
 {
     protected $fillable = [
         'name',
+        'is_admin',
     ];
 
     public function stockMovementsTo()

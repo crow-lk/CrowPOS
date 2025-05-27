@@ -47,6 +47,7 @@ class StoreController extends Controller
     {
         $Store = Store::create([
             'name' => $request->name,
+            'is_admin' => $request->is_admin,
         ]);
 
         if (!$Store) {

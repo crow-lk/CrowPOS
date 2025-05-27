@@ -26,6 +26,7 @@ class StoreStoreRequest extends FormRequest
         return [
             // 'product_type_id' => 'nullable|integer|exists:product_types,id',
             'name' => 'required|string|max:20',
+            'is_admin' => 'nullable|boolean'
         ];
     }
 }

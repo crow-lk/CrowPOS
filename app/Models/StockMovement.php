@@ -14,14 +14,16 @@ class StockMovement extends Model
         'supplier_id',
         'products',
         'reason',
-        'cost_price',
-        'quantity',
+        'cost_prices',
+        'quantities',
         'from_store_id',
         'to_store_id',
     ];
 
     protected $casts = [
         'products' => 'json',
+        'cost_prices' => 'json',
+        'quantities' => 'json',
     ];
 
     public function supplier()

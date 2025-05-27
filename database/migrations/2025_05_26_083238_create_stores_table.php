@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('is_admin')->default(false);
             $table->timestamps();
         });
     }

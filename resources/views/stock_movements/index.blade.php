@@ -24,8 +24,7 @@
                         <th class="text-start px-4 py-3">{{ __('Movement Type') }}</th>
                         <th class="text-start px-4 py-3">{{ __('Product Names') }}</th>
                         <th class="text-start px-4 py-3">{{ __('Supplier Name') }}</th>
-                        <th class="text-center px-4 py-3">{{ __('Quantity') }}</th>
-                        <th class="text-right px-4 py-3">{{ __('Cost Price') }}</th>
+                        <th class="text-right px-4 py-3">{{ __('Total Cost Price') }}</th>
                         <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -54,8 +53,14 @@
                             {{ implode(', ', $productNames) }}
                         </td>
                         <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->supplier->first_name ?? 'N/A' }} {{ $stockMovement->supplier->last_name ?? '' }}</td>
-                        <td class="text-center fw-bold px-4 py-3">{{ $stockMovement->quantity }}</td>
-                        <td class="fw-bold px-4 py-3 text-right">{{ $stockMovement->cost_price}}</td>
+                        <td class="fw-bold px-4 py-3 text-right">
+                            @php
+                                // Decode the JSON and ensure it's an array
+                                $costprices = json_decode($stockMovement->cost_prices, true); // true for associative array
+                                $costPriceSum = is_array($costprices) ? array_sum($costprices) : 0; // Check if it's an array
+                            @endphp
+                            {{ number_format($costPriceSum, 2) }} <!-- Format the sum to 2 decimal places -->
+                        </td>
                         <td class="text-center px-4 py-3">
                             <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
                                 <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
@@ -92,8 +97,7 @@
                         <th class="text-start px-4 py-3">{{ __('Product Names') }}</th>
                         <th class="text-start px-4 py-3">{{ __('From') }}</th>
                         <th class="text-start px-4 py-3">{{ __('To') }}</th>
-                        <th class="text-center px-4 py-3">{{ __('Quantity') }}</th>
-                        <th class="text-right px-4 py-3">{{ __('Cost Price') }}</th>
+                        <th class="text-right px-4 py-3">{{ __('Total Cost Price') }}</th>
                         <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -117,8 +121,14 @@
                             </td>
                             <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->fromStore->name?? 'N/A' }}</td>
                             <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->toStore->name ?? 'N/A' }}</td>
-                            <td class="text-center fw-bold px-4 py-3">{{ $stockMovement->quantity }}</td>
-                            <td class="fw-bold px-4 py-3 text-right">{{ $stockMovement->cost_price}}</td>
+                            <td class="fw-bold px-4 py-3 text-right">
+                                @php
+                                    // Decode the JSON and ensure it's an array
+                                    $costprices = json_decode($stockMovement->cost_prices, true); // true for associative array
+                                    $costPriceSum = is_array($costprices) ? array_sum($costprices) : 0; // Check if it's an array
+                                @endphp
+                                {{ number_format($costPriceSum, 2) }} <!-- Format the sum to 2 decimal places -->
+                            </td>
                             <td class="text-center px-4 py-3">
                                 <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
                                     <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"

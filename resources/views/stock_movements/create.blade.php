@@ -82,10 +82,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- <button type="button" id="add-product-row" class="btn btn-sm btn-secondary mt-2">+ Add Another
-                    Product
-                </button> --}}
                 </div>
 
                 {{-- <div class="form-group">
@@ -108,45 +104,39 @@
                     @enderror
                 </div> --}}
                 <div class="form-group">
-                <label for="products">{{ __('stockMovement.products') }}</label>
-                <div id="product-rows">
-                    <div class="product-row row mb-2">
-                        <div class="col-md-5">
-                            <select name="products[]" id="products" class="form-control @error('products') is-invalid @enderror">
-                                <option value="products">{{ __('stockMovement.Select_product') }}</option>
-
-
-
-                                @foreach ($products as $product)
-                                    <option value="{{ $product->id }}" {{ old('products') == $product->id ? 'selected' : '' }}>
-                                        {{ $product->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('products')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-                        <div class="col-md-3">
-                            <input type="number" name="quantity" class="form-control @error('quantity') is-invalid @enderror"
-                            id="quantity" placeholder="Quantity" required min="1">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="number" name="cost_price" class="form-control @error('cost_price') is-invalid @enderror"
-                            id="cost_price" placeholder="Cost Price" required>
-                        </div>
-                        <div class="col-md-1">
-                            <button type="button" class="btn btn-danger btn-sm remove-row">&times;</button>
-                        </div>
+            <label for="products">{{ __('stockMovement.products') }}</label>
+            <div id="products-rows">
+                <div class="product-row row mb-2">
+                    <div class="col-md-5">
+                        <select name="products[]" class="form-control @error('products') is-invalid @enderror">
+                            <option value="">{{ __('stockMovement.Select_product') }}</option>
+                            @foreach ($products as $product)
+                                <option value="{{ $product->id }}" {{ old('products.0') == $product->id ? 'selected' : '' }}>
+                                    {{ $product->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('products.*')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" name="quantities[]" class="form-control @error('quantities.*') is-invalid @enderror"
+                        placeholder="Quantity" required min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" name="cost_prices[]" class="form-control @error('cost_prices.*') is-invalid @enderror"
+                        placeholder="Cost Price" required>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger delete-product">Delete</button>
                     </div>
                 </div>
-
-                {{-- <button type="button" id="add-product-row" class="btn btn-sm btn-secondary mt-2">+ Add Another
-                    Product
-                </button> --}}
-                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="add-product">Add Another Product</button>
+        </div>
 
                 <div class="form-group">
                     <label for="reason">{{ __('stockMovement.reason') }}</label>
@@ -170,36 +160,30 @@
     <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            let rowIndex = 1;
-
-            $('#add-product-row').on('click', function () {
-                const newRow = `
-                <div class="product-row row mb-2">
-                    <div class="col-md-5">
-                        <select name="items[${rowIndex}][product_id]" class="form-control" required>
-                            <option value="">Select Product</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" name="items[${rowIndex}][quantity]" class="form-control" placeholder="Quantity" required min="1">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" name="items[${rowIndex}][cost_price]" class="form-control" placeholder="Cost Price" required step="0.01">
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger btn-sm remove-row">&times;</button>
-                    </div>
-                </div>`;
-                $('#product-rows').append(newRow);
-                rowIndex++;
+        document.addEventListener('DOMContentLoaded', function () {
+            const addProductButton = document.getElementById('add-product');
+            const productRowsContainer = document.getElementById('products-rows');
+            addProductButton.addEventListener('click', function () {
+                const newProductRow = productRowsContainer.firstElementChild.cloneNode(true);
+                const inputs = newProductRow.querySelectorAll('input, select');
+                // Clear the values of the cloned inputs
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('is-invalid');
+                });
+                // Add delete button functionality
+                const deleteButton = newProductRow.querySelector('.delete-product');
+                deleteButton.addEventListener('click', function () {
+                    productRowsContainer.removeChild(newProductRow);
+                });
+                productRowsContainer.appendChild(newProductRow);
             });
-
-            $(document).on('click', '.remove-row', function () {
-                $(this).closest('.product-row').remove();
+            // Add delete functionality to the existing delete button
+            const existingDeleteButtons = productRowsContainer.querySelectorAll('.delete-product');
+            existingDeleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    productRowsContainer.removeChild(button.closest('.product-row'));
+                });
             });
         });
     </script>

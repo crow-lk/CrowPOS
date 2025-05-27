@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('stock_movements', function (Blueprint $table) {
-            $table->integer('quantity')->after('reason');
-            $table->decimal('cost_price', 8, 2)->after('quantity');
-            $table->foreignId('to_store_id')->after('cost_price')->nullable()->constrained('stores')->onDelete('set null');
+            $table->json('quantities')->after('reason');
+            $table->json('cost_prices')->after('quantities'); // Changed to json
+            $table->foreignId('to_store_id')->after('cost_prices')->nullable()->constrained('stores')->onDelete('set null');
             $table->foreignId('from_store_id')->after('to_store_id')->nullable()->constrained('stores')->onDelete('set null');
         });
     }
@@ -29,10 +29,8 @@ return new class extends Migration
             $table->dropForeign(['from_store_id']);
             $table->dropColumn('to_store_id');
             $table->dropColumn('from_store_id');
-            $table->dropColumn('cost_price');
-            $table->dropColumn('quantity');
+            $table->dropColumn('cost_prices'); // Updated to match the added column
+            $table->dropColumn('quantities'); // Drop the quantities column as well
         });
     }
 };
-
-

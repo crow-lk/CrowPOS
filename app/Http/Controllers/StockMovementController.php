@@ -34,8 +34,10 @@ class StockMovementController extends Controller
             'supplier_id' => 'nullable|integer|exists:suppliers,id', // nullable for adjustments
             'products' => 'required|array',
             'reason' => 'nullable|string',
-            'cost_price' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
-            'quantity' => 'required|integer|min:1',
+            'cost_prices' => 'required|array',
+            'quantities' => 'required|array',
+            'cost_prices.*' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'quantities.*' => 'integer|min:1',
             'from_store_id' => 'nullable|integer|exists:stores,id',
             'to_store_id' => 'nullable|integer|exists:stores,id',
         ]);
@@ -46,25 +48,71 @@ class StockMovementController extends Controller
             'supplier_id' => $request->supplier_id,
             'products' => json_encode($request->products), // Store product IDs as JSON
             'reason' => $request->reason,
-            'quantity' => $request->quantity,
-            'cost_price' => $request->cost_price,
+            'quantities' => json_encode($request->quantities),
+            'cost_prices' => json_encode($request->cost_prices),
             'from_store_id' => $request->from_store_id,
             'to_store_id' => $request->to_store_id,
         ]);
 
         // Update product quantities based on movement type
-        foreach ($request->products as $productId) {
+        foreach ($request->products as $index => $productId) {
             $product = Product::find($productId);
             if ($product) {
                 if ($request->movement_type === 'stock_in') {
-                    $product->increment('quantity', $request->quantity); // Increase quantity
+                    $product->increment('quantity', $request->quantities[$index]);
                 } elseif ($request->movement_type === 'stock_out') {
-                    $product->decrement('quantity', $request->quantity); // Decrease quantity
+                    $product->decrement('quantity', $request->quantities[$index]);
                 }
             }
         }
 
         return redirect()->route('stock_movements.index')->with('success', 'Stock movement created successfully.');
+    }
+
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'movement_type' => 'required|in:stock_in,stock_out,adjustment', // Validate against enum values
+            'supplier_id' => 'nullable|integer|exists:suppliers,id', // nullable for adjustments
+            'products' => 'required|array',
+            'reason' => 'nullable|string',
+            'cost_prices' => 'required|array',
+            'quantities' => 'required|array',
+            'cost_prices.*' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'quantities.*' => 'integer|min:1',
+            'from_store_id' => 'nullable|integer|exists:stores,id',
+            'to_store_id' => 'nullable|integer|exists:stores,id',
+        ]);
+
+        // Create the stock movement
+        $stockMovement = StockMovement::create([
+            'movement_type' => $request->movement_type,
+            'supplier_id' => $request->supplier_id,
+            'products' => json_encode($request->products), // Store product IDs as JSON
+            'reason' => $request->reason,
+            'quantities' => json_encode($request->quantities),
+            'cost_prices' => json_encode($request->cost_prices),
+            'from_store_id' => $request->from_store_id,
+            'to_store_id' => $request->to_store_id,
+        ]);
+
+        // Update product quantities based on movement type
+        foreach ($request->products as $index => $productId) {
+            $product = Product::find($productId);
+            if ($product) {
+                if ($request->movement_type === 'stock_in') {
+                    $product->increment('quantity', $request->quantities[$index]);
+                } elseif ($request->movement_type === 'stock_out') {
+                    $product->decrement('quantity', $request->quantities[$index]);
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock movement created successfully.',
+            'data' => $stockMovement,
+        ], 201);
     }
 
     // Delete stock movement

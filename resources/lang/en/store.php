@@ -43,5 +43,8 @@ return [
     'Yes_Delete'        => 'Yes, delete it!',
     'No'                => 'No',
     'Create_store'           => 'Create Store',
+    'is_admin'           => 'Is Admin',
+    'Admin'           => 'Admin',
+    'Other'           => 'Other',
 
 ];
