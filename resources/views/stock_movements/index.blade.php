@@ -177,11 +177,6 @@
 </div>
 
 @endsection
-@php
-    $productIds = json_decode($stockMovement->products);
-    $productNames = \App\Models\Product::whereIn('id', $productIds)->pluck('name')->toArray();
-@endphp
-
 @section('js')
 <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <script type="module">
@@ -231,14 +226,11 @@
                 var quantities = JSON.parse(details.quantities); // Assuming you have quantities in the stock movement
                 var prices = JSON.parse(details.cost_prices); // Assuming you have cost prices in the stock movement
 
-                var productNames = @json($productNames);
-
                 productIds.forEach(function(productId, index) {
-                    var productName = productNames[productId-1];
 
                     productDetailsBody.append(`
                         <tr>
-                            <td>${productName}</td>
+                            <td>${productIds[index]}</td>
                             <td>${quantities[index]}</td>
                             <td>${prices[index]}</td>
                         </tr>
