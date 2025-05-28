@@ -23,5 +23,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/stock_movements/send-adjustment', [StockMovementController::class, 'sendAdjustment']);
 Route::post('/stock_movements/receive-adjustment', [StockMovementController::class, 'receiveAdjustment']);
 
-// Route::post('/products/send-product', [ProductController::class, 'sendProduct']);
-// Route::post('/products/receive-product', [ProductController::class, 'receiveProduct']);
+Route::post('/products/send-product', [ProductController::class, 'sendProduct']);
+Route::post('/products/receive-product', [ProductController::class, 'receiveProduct']);

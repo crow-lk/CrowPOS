@@ -39,40 +39,40 @@ class ProductController extends Controller
         return view('products.index')->with('products', $products);
     }
 
-    // public function sendProduct(ProductStoreRequest $request)
-    // {
-    //     $image_path = '';
-    //     $type = $request->input('type');
+    public function sendProduct(ProductStoreRequest $request)
+    {
+        $image_path = '';
+        $type = $request->input('type');
 
-    //     if ($request->hasFile('image')) {
-    //         $image_path = $request->file('image')->store('products', 'public');
-    //     }
-    //     // Prepare the data to send
-    //     $data = [
-    //         'id' => $request->id,
-    //         'name' => $request->name,
-    //         'description' => $request->description,
-    //         'category_id' => $request->category_id,
-    //         'product_type_id' => $request->product_type_id,
-    //         'brand_id' => $request->brand_id,
-    //         'supplier_id' => $request->supplier_id,
-    //         'image' => $image_path,
-    //         'barcode' => $request->barcode,
-    //         'price' => $request->price,
-    //         'quantity' => $request->quantity,
-    //         'status' => $request->status,
-    //         'type' => $type,
-    //     ];
+        if ($request->hasFile('image')) {
+            $image_path = $request->file('image')->store('products', 'public');
+        }
+        // Prepare the data to send
+        $data = [
+            'id' => $request->id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'product_type_id' => $request->product_type_id,
+            'brand_id' => $request->brand_id,
+            'supplier_id' => $request->supplier_id,
+            'image' => $image_path,
+            'barcode' => $request->barcode,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'status' => $request->status,
+            'type' => $type,
+        ];
 
-    //     // Send the data to the external API
-    //     $response = Http::post('http://newstore.test/api/products/receive-product', $data);
+        // Send the data to the external API
+        $response = Http::post('http://newstore.test/api/products/receive-product', $data);
 
-    //     if ($response->successful()) {
-    //         return redirect()->route('products.index')->with('success', __('product.success_creating'));
-    //     } else {
-    //         return response()->json(['success' => false, 'message' => 'Failed to send stock.'], 500);
-    //     }
-    // }
+        if ($response->successful()) {
+            return redirect()->route('products.index')->with('success', __('product.success_creating'));
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to send stock.'], 500);
+        }
+    }
 
 
     /**
@@ -124,44 +124,43 @@ class ProductController extends Controller
         if (!$product) {
             return redirect()->back()->with('error', __('product.error_creating'));
         }
-        // else {
-        //     $response = $this->sendAdjustment($request);
-        //     return $response;
-        // }
-        return redirect()->route('products.index')->with('success', __('product.success_creating'));
+        else {
+            $response = $this->sendAdjustment($request);
+            return $response;
+        }
     }
 
-    // public function receiveProduct(Request $request)
-    // {
-    //     $image_path = '';
-    //     $type = $request->input('type');
+    public function receiveProduct(Request $request)
+    {
+        $image_path = '';
+        $type = $request->input('type');
 
-    //     if ($request->hasFile('image')) {
-    //         $image_path = $request->file('image')->store('products', 'public');
-    //     }
+        if ($request->hasFile('image')) {
+            $image_path = $request->file('image')->store('products', 'public');
+        }
 
-    //     $product = Product::create([
+        $product = Product::create([
 
-    //         'name' => $request->name,
-    //         'description' => $request->description,
-    //         'category_id' => $request->category_id,
-    //         'product_type_id' => $request->product_type_id,
-    //         'brand_id' => $request->brand_id,
-    //         'supplier_id' => $request->supplier_id,
-    //         'image' => $image_path,
-    //         'barcode' => $request->barcode,
-    //         'price' => $request->price,
-    //         'quantity' => $request->quantity,
-    //         'status' => $request->status,
-    //         'type' => $type,
-    //     ]);
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'product_type_id' => $request->product_type_id,
+            'brand_id' => $request->brand_id,
+            'supplier_id' => $request->supplier_id,
+            'image' => $image_path,
+            'barcode' => $request->barcode,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'status' => $request->status,
+            'type' => $type,
+        ]);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Product Details received successfully.',
-    //         'data' => $product,
-    //     ], 201);
-    // }
+        return response()->json([
+            'success' => true,
+            'message' => 'Product Details received successfully.',
+            'data' => $product,
+        ], 201);
+    }
 
     /**
      * Display the specified resource.
