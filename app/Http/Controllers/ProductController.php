@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\supplier;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -22,21 +23,56 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-{
-    $products = Product::query(); // Start a query on the Product model
+    {
+        $products = Product::query(); // Start a query on the Product model
 
-    if ($request->search) {
-        $products = $products->where('name', 'LIKE', "%{$request->search}%");
+        if ($request->search) {
+            $products = $products->where('name', 'LIKE', "%{$request->search}%");
+        }
+
+        $products = $products->latest()->get(); // Get all products without pagination
+
+        if (request()->wantsJson()) {
+            return ProductResource::collection($products);
+        }
+
+        return view('products.index')->with('products', $products);
     }
 
-    $products = $products->latest()->get(); // Get all products without pagination
+    // public function sendProduct(ProductStoreRequest $request)
+    // {
+    //     $image_path = '';
+    //     $type = $request->input('type');
 
-    if (request()->wantsJson()) {
-        return ProductResource::collection($products);
-    }
+    //     if ($request->hasFile('image')) {
+    //         $image_path = $request->file('image')->store('products', 'public');
+    //     }
+    //     // Prepare the data to send
+    //     $data = [
+    //         'id' => $request->id,
+    //         'name' => $request->name,
+    //         'description' => $request->description,
+    //         'category_id' => $request->category_id,
+    //         'product_type_id' => $request->product_type_id,
+    //         'brand_id' => $request->brand_id,
+    //         'supplier_id' => $request->supplier_id,
+    //         'image' => $image_path,
+    //         'barcode' => $request->barcode,
+    //         'price' => $request->price,
+    //         'quantity' => $request->quantity,
+    //         'status' => $request->status,
+    //         'type' => $type,
+    //     ];
 
-    return view('products.index')->with('products', $products);
-}
+    //     // Send the data to the external API
+    //     $response = Http::post('http://newstore.test/api/products/receive-product', $data);
+
+    //     if ($response->successful()) {
+    //         return redirect()->route('products.index')->with('success', __('product.success_creating'));
+    //     } else {
+    //         return response()->json(['success' => false, 'message' => 'Failed to send stock.'], 500);
+    //     }
+    // }
 
 
     /**
@@ -70,6 +106,7 @@ class ProductController extends Controller
         }
 
         $product = Product::create([
+            'id' => $request->id,
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
@@ -87,8 +124,44 @@ class ProductController extends Controller
         if (!$product) {
             return redirect()->back()->with('error', __('product.error_creating'));
         }
+        // else {
+        //     $response = $this->sendAdjustment($request);
+        //     return $response;
+        // }
         return redirect()->route('products.index')->with('success', __('product.success_creating'));
     }
+
+    // public function receiveProduct(Request $request)
+    // {
+    //     $image_path = '';
+    //     $type = $request->input('type');
+
+    //     if ($request->hasFile('image')) {
+    //         $image_path = $request->file('image')->store('products', 'public');
+    //     }
+
+    //     $product = Product::create([
+
+    //         'name' => $request->name,
+    //         'description' => $request->description,
+    //         'category_id' => $request->category_id,
+    //         'product_type_id' => $request->product_type_id,
+    //         'brand_id' => $request->brand_id,
+    //         'supplier_id' => $request->supplier_id,
+    //         'image' => $image_path,
+    //         'barcode' => $request->barcode,
+    //         'price' => $request->price,
+    //         'quantity' => $request->quantity,
+    //         'status' => $request->status,
+    //         'type' => $type,
+    //     ]);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Product Details received successfully.',
+    //         'data' => $product,
+    //     ], 201);
+    // }
 
     /**
      * Display the specified resource.
