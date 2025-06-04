@@ -27,8 +27,8 @@
             <div class="form-group">
                 <label for="is_admin">{{ __('store.is_admin') }}</label>
                 <select name="is_admin" class="form-control @error('is_admin') is-invalid @enderror" id="is_admin">
-                    <option value="1" {{ old('is_admin') === 1 ? 'selected' : ''}}>{{ __('store.Admin') }}</option>
-                    <option value="0" {{ old('is_admin') === 0 ? 'selected' : ''}}>{{ __('store.Other') }}</option>
+                    <option value="1" {{ old('is_admin', $store->is_admin) === 1 ? 'selected' : ''}}>{{ __('store.Admin') }}</option>
+                    <option value="0" {{ old('is_admin', $store->is_admin) === 0 ? 'selected' : ''}}>{{ __('store.Other') }}</option>
                 </select>
                 @error('is_admin')
                 <span class="invalid-feedback" role="alert">

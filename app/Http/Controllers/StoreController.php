@@ -59,18 +59,18 @@ class StoreController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Store  $Store
+     * @param  \App\Models\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function show(Store $Store) {}
+    public function show(Store $store) {}
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Store  $Store
+     * @param  \App\Models\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function edit(Store $Store)
+    public function edit(Store $store)
     {
         // $productTypes = ProductType::all(); // Fetch all productTypes
         return view('stores.edit',compact('store'));
@@ -83,24 +83,25 @@ class StoreController extends Controller
      * @param  \App\Models\Store  $Store
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Store $Store)
+    public function update(Request $request, Store $store)
     {
         // $Store->product_type_id = $request->product_type_id;
-        $Store->name = $request->name;
+        $store->name = $request->name;
+        $store->is_admin = $request->is_admin;
 
-        if (!$Store->save()) {
+        if (!$store->save()) {
             return redirect()->back()->with('error', __('store.error_updating'));
         }
         return redirect()->route('stores.index')->with('success', __('store.success_updating'));
     }
 
-    public function destroy(Store $Store)
+    public function destroy(Store $store)
     {
-        if ($Store->avatar) {
-            Storage::delete($Store->avatar);
+        if ($store->avatar) {
+            Storage::delete($store->avatar);
         }
 
-        $Store->delete();
+        $store->delete();
 
         return response()->json([
             'success' => true
