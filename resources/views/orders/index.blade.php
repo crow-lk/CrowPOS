@@ -159,8 +159,8 @@
                 itemsHTML += `
             <tr>
                 <td>${index + 1}</td>
-                <td>${item.product.name}</td>
-                <td>${item.description || 'N/A'}</td>
+                <td>${item.product.product_detail.name}</td>
+                <td>${item.product.product_detail.description || 'N/A'}</td>
                 <td class="text-right">${parseFloat(item.product.price).toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td class="text-right">${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>

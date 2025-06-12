@@ -9,7 +9,8 @@
 <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
 @endsection
 @php
-    $products = \App\Models\Product::paginate(10); // Adjust the number as needed
+    $user = auth()->user();
+    $productDetails = \App\Models\ProductDetail::paginate(10); // Adjust the number as needed
 @endphp
 @section('content')
 <div class="card product-list">
@@ -46,38 +47,40 @@
 
             <!-- Table Body -->
             <tbody>
-                @foreach ($products as $product)
+                @foreach ($productDetails as $productDetail)
                 <tr class="transition"
                     style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
-                    <td class="text-center px-4 py-3">{{ $product->id }}</td>
-                    <td class="text-start px-4 py-3">{{ $product->name }}</td>
-                    <td class="text-center px-4 py-3">{{ $product->type }}</td>
+                    <td class="text-center px-4 py-3">{{ $productDetail->id }}</td>
+                    <td class="text-start px-4 py-3">{{ $productDetail->name }}</td>
+                    <td class="text-center px-4 py-3">{{ $productDetail->type }}</td>
                     <td class="text-center px-4 py-3">
-                        @if ($product->image)
-                        <img src="{{ Storage::url($product->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                        @if ($productDetail->image)
+                        <img src="{{ Storage::url($productDetail->image) }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
                         @else
                         {{ __('N/A') }}
                         @endif
                     </td>
-                    <td class="text-center px-4 py-3">{{ $product->barcode ?? 'N/A' }}</td>
-                    <td class="text-right px-4 py-3">{{ number_format($product->price, 2) }}</td>
-                    <td class="text-right px-4 py-3">{{ $product->quantity }}</td>
+                    <td class="text-center px-4 py-3">{{ $productDetail->barcode ?? 'N/A' }}</td>
+                    <td class="text-right px-4 py-3">{{ number_format($productDetail->price, 2) }}</td>
+                    <td class="text-right px-4 py-3">
+                            {{ $productDetail->products->where('store_id', auth()->user()->store_id)->first()->quantity ?? 0}}
+                    </td>
                     <td class="text-center px-4 py-3">
-                        <span class="badge badge-{{ $product->status ? 'success' : 'danger' }}">
-                            {{ $product->status ? __('common.Active') : __('common.Inactive') }}
+                        <span class="badge badge-{{ $productDetail->status ? 'success' : 'danger' }}">
+                            {{ $productDetail->status ? __('common.Active') : __('common.Inactive') }}
                         </span>
                     </td>
-                    <td class="text-center px-4 py-3 text-muted">{{ $product->created_at->format('Y-m-d') }}</td>
-                    <td class="text-center px-4 py-3 text-muted">{{ $product->updated_at->format('Y-m-d') }}</td>
+                    <td class="text-center px-4 py-3 text-muted">{{ $productDetail->created_at->format('Y-m-d') }}</td>
+                    <td class="text-center px-4 py-3 text-muted">{{ $productDetail->updated_at->format('Y-m-d') }}</td>
                     <td class="text-center px-4 py-3">
                         <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
-                            <a href="{{ route('products.edit', $product) }}"
+                            <a href="{{ route('products.edit', $productDetail) }}"
                                 class="btn btn-sm px-3 py-1 shadow-sm rounded-pill"
                                 style="background: #2980b9; color: white; border: none;">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
-                                data-url="{{ route('products.destroy', $product) }}"
+                                data-url="{{ route('products.destroy', $productDetail) }}"
                                 style="background: #e74c3c; color: white; border: none;">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -90,7 +93,7 @@
     </div>
     <div class="d-flex justify-content-center">
 
-        {{ $products->links() }} <!-- This will generate the pagination links -->
+        {{ $productDetails->links() }} <!-- This will generate the pagination links -->
 
     </div>
     </div>

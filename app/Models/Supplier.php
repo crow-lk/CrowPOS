@@ -18,7 +18,7 @@ class Supplier extends Model
         'address',
         'avatar'
     ];
-    public function products()
+    public function productDetails()
     {
         return $this->hasMany(Product::class);
     }
@@ -27,6 +27,6 @@ class Supplier extends Model
     {
         return $this->hasMany(StockMovement::class);
     }
-    
+
     // Define relationships here (e.g., with the Product model)
 }

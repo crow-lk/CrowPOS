@@ -8,34 +8,20 @@ use Illuminate\Support\Facades\Storage;
 class Product extends Model
 {
     protected $fillable = [
-        'name',
-        'description',
-        'category_id',
-        'product_type_id',
-        'brand_id',
-        'supplier_id',
-        'image',
-        'barcode',
-        'price',
+        'product_detail_id',
+        'store_id',
         'quantity',
-        'status',
-        'type',
-
 
     ];
-    public function supplier()
-{
-    return $this->belongsTo(Supplier::class);
-}
 
-
-    public function getImageUrl()
+    public function store()
     {
-        if ($this->image) {
-            return Storage::url($this->image);
-        }
-        return asset('images/img-placeholder.jpg');
+        return $this->belongsTo(Store::class);
     }
 
+    public function productDetail()
+    {
+        return $this->belongsTo(ProductDetail::class, 'product_detail_id');
+    }
 
 }

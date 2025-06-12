@@ -80,7 +80,7 @@
                      <tbody>
                         @foreach ($low_stock_products as $product)
                         <tr data-toggle="modal" data-target="#productModalLow{{$product->id}}" style="cursor: pointer;">
-                           <td>{{$product->name}}</td>
+                           <td>{{$product->productDetail->name}}</td>
                            <td>{{$product->quantity}}</td>
                         </tr>
 
@@ -89,14 +89,14 @@
                            <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                  <div class="modal-header bg-primary">
-                                    <h5 class="modal-title text-white" id="productModalLabelLow{{$product->id}}">{{$product->name}}</h5>
+                                    <h5 class="modal-title text-white" id="productModalLabelLow{{$product->id}}">{{$product->productDetail->name}}</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                        <span aria-hidden="true">&times;</span>
                                     </button>
                                  </div>
                                  <div class="modal-body">
                                     <div class="text-center mb-3">
-                                       <img src="{{ Storage::url($product->image) }}" alt="{{$product->name}}" class="img-thumbnail" style="max-width: 150px;">
+                                       <img src="{{ Storage::url($product->productDetail->image) }}" alt="{{$product->productDetail->name}}" class="img-thumbnail" style="max-width: 150px;">
                                     </div>
                                     <p><strong>Price:</strong> {{config('settings.currency_symbol')}} {{$product->price}}</p>
                                     <p><strong>Quantity:</strong> {{$product->quantity}}</p>
@@ -105,7 +105,7 @@
                                           {{$product->status ? __('common.Active') : __('common.Inactive') }}
                                        </span>
                                     </p>
-                                    <p><strong>Barcode:</strong> {{$product->barcode}}</p>
+                                    <p><strong>Barcode:</strong> {{$product->productDetail->barcode}}</p>
                                     <p><strong>Updated At:</strong> {{$product->updated_at->format('d M Y')}}</p>
                                  </div>
                                  <div class="modal-footer">
@@ -140,7 +140,7 @@
                      <tbody>
                         @foreach ($past_months_products as $product)
                         <tr data-toggle="modal" data-target="#productModalYear{{$product->id}}" style="cursor: pointer;">
-                           <td>{{$product->name}}</td>
+                           <td>{{$product->productDetail->name}}</td>
                            <td>{{$product->quantity}}</td>
                         </tr>
 
@@ -149,14 +149,14 @@
                            <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                  <div class="modal-header bg-gradient-warning">
-                                    <h5 class="modal-title text-black" id="productModalLabelYear{{$product->id}}">{{$product->name}}</h5>
+                                    <h5 class="modal-title text-black" id="productModalLabelYear{{$product->id}}">{{$product->productDetail->name}}</h5>
                                     <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
                                        <span aria-hidden="true">&times;</span>
                                     </button>
                                  </div>
                                  <div class="modal-body">
                                     <div class="text-center mb-3">
-                                       <img src="{{ Storage::url($product->image) }}" alt="{{$product->name}}" class="img-thumbnail" style="max-width: 150px;">
+                                       <img src="{{ Storage::url($product->productDetail->image) }}" alt="{{$product->productDetail->name}}" class="img-thumbnail" style="max-width: 150px;">
                                     </div>
                                     <p><strong>Price:</strong> {{config('settings.currency_symbol')}} {{$product->price}}</p>
                                     <p><strong>Quantity:</strong> {{$product->quantity}}</p>
@@ -165,7 +165,7 @@
                                           {{$product->status ? __('common.Active') : __('common.Inactive') }}
                                        </span>
                                     </p>
-                                    <p><strong>Barcode:</strong> {{$product->barcode}}</p>
+                                    <p><strong>Barcode:</strong> {{$product->productDetail->barcode}}</p>
                                     <p><strong>Updated At:</strong> {{$product->updated_at->format('d M Y')}}</p>
                                  </div>
                                  <div class="modal-footer">
@@ -202,7 +202,7 @@
                      <tbody>
                         @foreach ($current_month_products as $product)
                         <tr data-toggle="modal" data-target="#productModalHot{{$product->id}}" style="cursor: pointer;">
-                           <td>{{$product->name}}</td>
+                           <td>{{$product->productDetail->name}}</td>
                            <td>{{$product->quantity}}</td>
                         </tr>
 
@@ -211,14 +211,14 @@
                            <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                  <div class="modal-header bg-success">
-                                    <h5 class="modal-title text-white" id="productModalLabelHot{{$product->id}}">{{$product->name}}</h5>
+                                    <h5 class="modal-title text-white" id="productModalLabelHot{{$product->id}}">{{$product->productDetail->name}}</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                        <span aria-hidden="true">&times;</span>
                                     </button>
                                  </div>
                                  <div class="modal-body">
                                     <div class="text-center mb-3">
-                                       <img src="{{ Storage::url($product->image) }}" alt="{{$product->name}}" class="img-thumbnail" style="max-width: 150px;">
+                                       <img src="{{ Storage::url($product->productDetail->image) }}" alt="{{$product->productDetail->name}}" class="img-thumbnail" style="max-width: 150px;">
                                     </div>
                                     <p><strong>Price:</strong> {{config('settings.currency_symbol')}} {{$product->price}}</p>
                                     <p><strong>Quantity:</strong> {{$product->quantity}}</p>
@@ -227,7 +227,7 @@
                                           {{$product->status ? __('common.Active') : __('common.Inactive') }}
                                        </span>
                                     </p>
-                                    <p><strong>Barcode:</strong> {{$product->barcode}}</p>
+                                    <p><strong>Barcode:</strong> {{$product->productDetail->barcode}}</p>
                                     <p><strong>Updated At:</strong> {{$product->updated_at->format('d M Y')}}</p>
                                  </div>
                                  <div class="modal-footer">
@@ -261,7 +261,7 @@
                      <tbody>
                         @foreach ($best_selling_products as $product)
                         <tr data-toggle="modal" data-target="#productModalBest{{$product->id}}" style="cursor: pointer;">
-                           <td>{{$product->name}}</td>
+                           <td>{{$product->productDetail->name}}</td>
                            <td>{{$product->quantity}}</td>
                         </tr>
 
@@ -270,14 +270,14 @@
                            <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                  <div class="modal-header bg-danger">
-                                    <h5 class="modal-title text-white" id="productModalLabelBest{{$product->id}}">{{$product->name}}</h5>
+                                    <h5 class="modal-title text-white" id="productModalLabelBest{{$product->id}}">{{$product->productDetail->name}}</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                        <span aria-hidden="true">&times;</span>
                                     </button>
                                  </div>
                                  <div class="modal-body">
                                     <div class="text-center mb-3">
-                                       <img src="{{ Storage::url($product->image) }}" alt="{{$product->name}}" class="img-thumbnail" style="max-width: 150px;">
+                                       <img src="{{ Storage::url($product->productDetail->image) }}" alt="{{$product->productDetail->name}}" class="img-thumbnail" style="max-width: 150px;">
                                     </div>
                                     <p><strong>Price:</strong> {{config('settings.currency_symbol')}} {{$product->price}}</p>
                                     <p><strong>Quantity:</strong> {{$product->quantity}}</p>
@@ -286,8 +286,8 @@
                                           {{$product->status ? __('common.Active') : __('common.Inactive') }}
                                        </span>
                                     </p>
-                                    <p><strong>Barcode:</strong> {{$product->barcode}}</p>
-                                    
+                                    <p><strong>Barcode:</strong> {{$product->productDetail->barcode}}</p>
+
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

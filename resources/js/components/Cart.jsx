@@ -85,19 +85,25 @@ class Cart extends Component {
     }
 
     handleScanBarcode(event) {
-        event.preventDefault();
-        const { barcode } = this.state;
-        if (!!barcode) {
-            axios.post("/admin/cart", { barcode })
-                .then((res) => {
-                    this.loadCart();
-                    this.setState({ barcode: "" });
-                })
-                .catch((err) => {
-                    Swal.fire("Error!", err.response.data.message, "error");
-                });
-        }
+    event.preventDefault();
+    const { barcode } = this.state;
+    if (!!barcode) {
+        axios.get(`/admin/products?barcode=${barcode}`)
+            .then((res) => {
+                const product = res.data.data[0]; // Assuming the response returns an array of products
+                if (product) {
+                    this.addProductToCart(product.barcode);
+                } else {
+                    Swal.fire("Error!", "Product not found.", "error");
+                }
+                this.setState({ barcode: "" });
+            })
+            .catch((err) => {
+                Swal.fire("Error!", err.response.data.message, "error");
+            });
     }
+}
+
 
     handleChangeQty(product_id, qty) {
         const cart = this.state.cart.map((c) => {

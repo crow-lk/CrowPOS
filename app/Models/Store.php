@@ -9,8 +9,12 @@ class Store extends Model
 {
     protected $fillable = [
         'name',
-        'is_admin',
     ];
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class, 'store_id');
+    }
 
     public function stockMovementsTo()
     {
@@ -19,5 +23,25 @@ class Store extends Model
     public function stockMovementsFrom()
     {
         return $this->hasMany(StockMovement::class, 'from_store_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Product::class);
     }
 }

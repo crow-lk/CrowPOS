@@ -62,7 +62,6 @@
             <tr>
                 <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('store.ID') }}</th>
                 <th class="text-start px-4 py-3">{{ __('store.Name') }}</th>
-                <th class="text-center px-4 py-3">{{ __('store.is_admin') }}</th>
                 <th class="text-center px-4 py-3">{{ __('common.Created_At') }}</th>
                 <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('store.Actions') }}</th>
             </tr>
@@ -75,9 +74,6 @@
                 style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
                 <td class="text-center fw-bold px-4 py-3 ">{{ $store->id }}</td>
                 <td class="text-start fw-semibold px-4 py-3 ">{{ $store->name }}</td>
-                <td class="text-center px-4 py-3 custom-checkbox">
-                    <input type="checkbox" disabled {{ $store->is_admin ? 'checked' : '' }}>
-                </td>
                 <td class="text-center px-4 py-3 text-muted">{{ $store->created_at->format('Y-m-d') }}</td>
                 <td class="text-center px-4 py-3">
                     <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">

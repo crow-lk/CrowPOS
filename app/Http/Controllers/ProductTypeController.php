@@ -44,8 +44,8 @@ class ProductTypeController extends Controller
     public function store(ProductTypeStoreRequest $request)
     {
         $ProductType = ProductType::create([
-            'category_id' => $request->category_id,
             'name' => $request->name,
+            'category_id' => $request->category_id,
         ]);
 
         if (!$ProductType) {

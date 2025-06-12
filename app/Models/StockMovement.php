@@ -18,6 +18,7 @@ class StockMovement extends Model
         'quantities',
         'from_store_id',
         'to_store_id',
+        'store_id',
     ];
 
     protected $casts = [
@@ -29,6 +30,11 @@ class StockMovement extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id');
     }
 
     public function toStore()

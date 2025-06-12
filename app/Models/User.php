@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password',
+        'first_name', 'last_name', 'email', 'password','store_id'
     ];
 
     /**
@@ -60,4 +60,10 @@ class User extends Authenticatable
     {
         return 'https://www.gravatar.com/avatar/' . md5($this->email);
     }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
 }

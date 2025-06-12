@@ -22,9 +22,9 @@
                     <tr>
                         <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('ID') }}</th>
                         <th class="text-start px-4 py-3">{{ __('Movement Type') }}</th>
-                        <th class="text-start px-4 py-3">{{ __('Product Names') }}</th>
                         <th class="text-start px-4 py-3">{{ __('Supplier Name') }}</th>
                         <th class="text-right px-4 py-3">{{ __('Total Cost Price') }}</th>
+                        <th class="text-center px-4 py-3">{{ __('Created At') }}</th>
                         <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -45,13 +45,6 @@
                                 <span class="badge bg-warning text-dark">Adjustment</span>
                             @endif
                         </td>
-                        <td class="text-start fw-semibold px-4 py-3">
-                            @php
-                                $productIds = json_decode($stockMovement->products);
-                                $productNames = \App\Models\Product::whereIn('id', $productIds)->pluck('name')->toArray();
-                            @endphp
-                            {{ implode(', ', $productNames) }}
-                        </td>
                         <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->supplier->first_name ?? 'N/A' }} {{ $stockMovement->supplier->last_name ?? '' }}</td>
                         <td class="fw-bold px-4 py-3 text-right">
                             @php
@@ -61,8 +54,12 @@
                             @endphp
                             {{ number_format($costPriceSum, 2) }} <!-- Format the sum to 2 decimal places -->
                         </td>
+                        <td class="text-center fw-semibold px-4 py-3">{{ $stockMovement->created_at->format('Y-m-d') }}</td>
                         <td class="text-center px-4 py-3">
                             <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
+                                <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-view" data-details="{{ json_encode($stockMovement) }}" style="background: #1fa4f1; color: white; border: none;">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
                                     data-url="{{ route('stock_movements.destroy', $stockMovement) }}"
                                     style="background: #e74c3c; color: white; border: none;">
@@ -94,30 +91,23 @@
                     <tr>
                         <th class="text-center px-4 py-3" style="border-top-left-radius: 12px;">{{ __('ID') }}</th>
                         <th class="text-start px-4 py-3">{{ __('Movement Type') }}</th>
-                        <th class="text-start px-4 py-3">{{ __('Product Names') }}</th>
                         <th class="text-start px-4 py-3">{{ __('From') }}</th>
                         <th class="text-start px-4 py-3">{{ __('To') }}</th>
                         <th class="text-right px-4 py-3">{{ __('Total Cost Price') }}</th>
+                        <th class="text-center px-4 py-3">{{ __('Created At') }}</th>
                         <th class="text-center px-4 py-3" style="border-top-right-radius: 12px;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
                 <!-- Adjustments Table Body -->
                 <tbody>
-                    @foreach ($stockMovements as $stockMovement)
+                    @foreach ($adjustmentMovements as $stockMovement)
                         @if($stockMovement->movement_type == 'adjustment')
                         <tr class="transition"
                             style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease-in-out;">
                             <td class="text-center fw-bold px-4 py-3">{{ $stockMovement->id }}</td>
                             <td class="text-start fw-semibold px-4 py-3">
                                 <span class="badge bg-warning text-dark">Adjustment</span>
-                            </td>
-                            <td class="text-start fw-semibold px-4 py-3">
-                                @php
-                                    $productIds = json_decode($stockMovement->products);
-                                    $productNames = \App\Models\Product::whereIn('id', $productIds)->pluck('name')->toArray();
-                                @endphp
-                                {{ implode(', ', $productNames) }}
                             </td>
                             <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->fromStore->name?? 'N/A' }}</td>
                             <td class="text-start fw-semibold px-4 py-3">{{ $stockMovement->toStore->name ?? 'N/A' }}</td>
@@ -129,8 +119,12 @@
                                 @endphp
                                 {{ number_format($costPriceSum, 2) }} <!-- Format the sum to 2 decimal places -->
                             </td>
+                            <td class="text-center fw-semibold px-4 py-3">{{ $stockMovement->created_at->format('Y-m-d') }}</td>
                             <td class="text-center px-4 py-3">
                                 <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 6px;">
+                                    <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-view" data-details="{{ json_encode($stockMovement) }}" style="background: #1fa4f1; color: white; border: none;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                     <button class="btn btn-sm px-3 py-1 shadow-sm rounded-pill btn-delete"
                                         data-url="{{ route('stock_movements.destroy', $stockMovement) }}"
                                         style="background: #e74c3c; color: white; border: none;">
@@ -150,11 +144,44 @@
 </div>
 
 @endsection
+@section('model')
+<!-- Modal -->
+<div class="modal fade" id="modalInvoice" tabindex="-1" role="dialog" aria-labelledby="modalInvoiceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInvoiceLabel">Stock Movement Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Product Name') }}</th>
+                            <th>{{ __('Quantity') }}</th>
+                            <th>{{ __('Price') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productDetailsBody">
+                        <!-- Dynamic content will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+@endsection
 @section('js')
 <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <script type="module">
     $(document).ready(function() {
+        // Delete button functionality
         $(document).on('click', '.btn-delete', function() {
             var $this = $(this);
             const swalWithBootstrapButtons = Swal.mixin({
@@ -165,12 +192,11 @@
                 buttonsStyling: false
             });
 
-
             swalWithBootstrapButtons.fire({
                 title: '{{ __('stockMovement.sure') }}',
                 text: '{{ __('stockMovement.really_delete') }}',
                 icon: 'warning',
-                showCancelButton: true ,
+                showCancelButton: true,
                 confirmButtonText: '{{ __('stockMovement.yes_delete') }}',
                 cancelButtonText: '{{ __('stockMovement.No') }}',
                 reverseButtons: true
@@ -187,6 +213,35 @@
                 }
             });
         });
+
+        // View button functionality
+        $(document).on('click', '.btn-view', function() {
+            var details = $(this).data('details');
+            var productDetailsBody = $('#productDetailsBody');
+            productDetailsBody.empty(); // Clear previous content
+
+            // Populate the modal with product details
+            if (details.products) {
+                var productIds = JSON.parse(details.products);
+                var quantities = JSON.parse(details.quantities); // Assuming you have quantities in the stock movement
+                var prices = JSON.parse(details.cost_prices); // Assuming you have cost prices in the stock movement
+
+                productIds.forEach(function(productId, index) {
+
+                    productDetailsBody.append(`
+                        <tr>
+                            <td>${productIds[index]}</td>
+                            <td>${quantities[index]}</td>
+                            <td>${prices[index]}</td>
+                        </tr>
+                    `);
+                });
+            }
+
+            // Show the modal
+            $('#modalInvoice').modal('show');
+        });
     });
 </script>
+
 @endsection

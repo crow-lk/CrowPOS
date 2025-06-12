@@ -3,35 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductDetail;
 use App\Models\Supplier;
 use App\Models\StockMovement;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StockMovementController extends Controller
 {
     public function index()
     {
-        // Retrieve all stock movements with supplier, fromStore, and toStore, paginated
-        $stockMovements = StockMovement::with(['supplier', 'fromStore', 'toStore'])->paginate(10);
+        $user = auth()->user();
+        $stockMovements = StockMovement::with(['supplier', 'fromStore', 'toStore', 'store'])
+            ->where('store_id', $user->store_id)
+            ->whereIn('movement_type', ['stock_in', 'stock_out']) // Filter for stock_in and stock_out
+            ->paginate(5);
+        // Adjustment movements (without store_id filter)
+        $adjustmentMovements = StockMovement::with(['supplier', 'fromStore', 'toStore', 'store'])
+            ->where('movement_type', 'adjustment') // Filter for adjustments
+            ->paginate(5);
 
-        return view('stock_movements.index', compact('stockMovements'));
+        return view('stock_movements.index', compact('stockMovements', 'adjustmentMovements'));
     }
 
     public function create()
     {
-        $products = Product::all();
+        $user = auth()->user();
+        $productDetails = ProductDetail::all();
         $suppliers = Supplier::all();
         $stores = Store::all();
 
-        return view('stock_movements.create', compact('products', 'suppliers', 'stores'));
+        return view('stock_movements.create', compact('productDetails', 'suppliers', 'stores'));
     }
 
     public function store(Request $request)
     {
+        $user = auth()->user();
+
         $request->validate([
-            'movement_type' => 'required|in:stock_in,stock_out,adjustment', // Validate against enum values
-            'supplier_id' => 'nullable|integer|exists:suppliers,id', // nullable for adjustments
+            'movement_type' => 'required|in:stock_in,stock_out,adjustment',
+            'supplier_id' => 'nullable|integer|exists:suppliers,id',
             'products' => 'required|array',
             'reason' => 'nullable|string',
             'cost_prices' => 'required|array',
@@ -40,82 +52,94 @@ class StockMovementController extends Controller
             'quantities.*' => 'integer|min:1',
             'from_store_id' => 'nullable|integer|exists:stores,id',
             'to_store_id' => 'nullable|integer|exists:stores,id',
+            'store_id' => 'nullable|integer|exists:stores,id',
         ]);
 
-        // Create the stock movement
-        $stockMovement = StockMovement::create([
-            'movement_type' => $request->movement_type,
-            'supplier_id' => $request->supplier_id,
-            'products' => json_encode($request->products), // Store product IDs as JSON
-            'reason' => $request->reason,
-            'quantities' => json_encode($request->quantities),
-            'cost_prices' => json_encode($request->cost_prices),
-            'from_store_id' => $request->from_store_id,
-            'to_store_id' => $request->to_store_id,
-        ]);
+        DB::beginTransaction();
 
-        // Update product quantities based on movement type
-        foreach ($request->products as $index => $productId) {
-            $product = Product::find($productId);
-            if ($product) {
+        try {
+            $stockMovement = StockMovement::create([
+                'movement_type' => $request->movement_type,
+                'supplier_id' => $request->supplier_id,
+                'products' => json_encode($request->products),
+                'reason' => $request->reason,
+                'quantities' => json_encode($request->quantities),
+                'cost_prices' => json_encode($request->cost_prices),
+                'from_store_id' => $request->from_store_id,
+                'to_store_id' => $request->to_store_id,
+                'store_id' => $user->store_id,
+            ]);
+
+            $product = Product::create([
+
+            ]);
+
+            foreach ($request->products as $index => $productDetailId) {
+                $quantity = $request->quantities[$index];
+
                 if ($request->movement_type === 'stock_in') {
-                    $product->increment('quantity', $request->quantities[$index]);
+                    // Stock In: Increase quantity in the current store
+                    $product = Product::where('product_detail_id', $productDetailId)
+                        ->where('store_id', $user->store_id)
+                        ->first();
+                    if ($product) {
+                        $product->increment('quantity', $quantity);
+                    } else {
+                        // Create a new product entry if it doesn't exist
+                        Product::create([
+                            'product_detail_id' => $productDetailId,
+                            'store_id' => $user->store_id,
+                            'quantity' => $quantity,
+                        ]);
+                    }
                 } elseif ($request->movement_type === 'stock_out') {
-                    $product->decrement('quantity', $request->quantities[$index]);
+                    // Stock Out: Decrease quantity in the current store
+                    $product = Product::where('product_detail_id', $productDetailId)
+                        ->where('store_id', $user->store_id)
+                        ->first();
+
+                    if ($product) {
+                        $product->decrement('quantity', $quantity);
+                    }
+                } elseif ($request->movement_type === 'adjustment') {
+                    // Adjustment: Decrease from_store and increase to_store
+
+                    // Decrease quantity in from_store
+                    $fromProduct = Product::where('product_detail_id', $productDetailId)
+                        ->where('store_id', $request->from_store_id)
+                        ->first();
+
+                    if ($fromProduct) {
+                        $fromProduct->decrement('quantity', $quantity);
+                    }
+
+                    // Increase quantity in to_store
+                    $toProduct = Product::where('product_detail_id', $productDetailId)
+                        ->where('store_id', $request->to_store_id)
+                        ->first();
+
+                    if ($toProduct) {
+                        $toProduct->increment('quantity', $quantity);
+                    } else {
+                        // Create a new product entry in to_store if it doesn't exist
+                        Product::create([
+                            'product_detail_id' => $productDetailId,
+                            'store_id' => $request->to_store_id,
+                            'quantity' => $quantity,
+                        ]);
+                    }
                 }
             }
-        }
 
-        return redirect()->route('stock_movements.index')->with('success', 'Stock movement created successfully.');
+            DB::commit();
+            return redirect()->route('stock_movements.index')->with('success', 'Stock movement created successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Failed to create stock movement.  See logs for details.');
+        }
     }
 
-    public function apiStore(Request $request)
-    {
-        $request->validate([
-            'movement_type' => 'required|in:stock_in,stock_out,adjustment', // Validate against enum values
-            'supplier_id' => 'nullable|integer|exists:suppliers,id', // nullable for adjustments
-            'products' => 'required|array',
-            'reason' => 'nullable|string',
-            'cost_prices' => 'required|array',
-            'quantities' => 'required|array',
-            'cost_prices.*' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
-            'quantities.*' => 'integer|min:1',
-            'from_store_id' => 'nullable|integer|exists:stores,id',
-            'to_store_id' => 'nullable|integer|exists:stores,id',
-        ]);
-
-        // Create the stock movement
-        $stockMovement = StockMovement::create([
-            'movement_type' => $request->movement_type,
-            'supplier_id' => $request->supplier_id,
-            'products' => json_encode($request->products), // Store product IDs as JSON
-            'reason' => $request->reason,
-            'quantities' => json_encode($request->quantities),
-            'cost_prices' => json_encode($request->cost_prices),
-            'from_store_id' => $request->from_store_id,
-            'to_store_id' => $request->to_store_id,
-        ]);
-
-        // Update product quantities based on movement type
-        foreach ($request->products as $index => $productId) {
-            $product = Product::find($productId);
-            if ($product) {
-                if ($request->movement_type === 'stock_in') {
-                    $product->increment('quantity', $request->quantities[$index]);
-                } elseif ($request->movement_type === 'stock_out') {
-                    $product->decrement('quantity', $request->quantities[$index]);
-                }
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Stock movement created successfully.',
-            'data' => $stockMovement,
-        ], 201);
-    }
-
-    // Delete stock movement
     public function destroy(StockMovement $stockMovement)
     {
         $stockMovement->delete();
@@ -123,5 +147,3 @@ class StockMovementController extends Controller
         return redirect()->route('stock_movements.index')->with('success', 'Stock movement deleted successfully.');
     }
 }
-
-

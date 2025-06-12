@@ -23,19 +23,6 @@
                 @enderror
             </div>
 
-            <div class="form-group">
-                <label for="is_admin">{{ __('store.is_admin') }}</label>
-                <select name="is_admin" class="form-control @error('is_admin') is-invalid @enderror" id="is_admin">
-                    <option value="1" {{ old('is_admin') === 1 ? 'selected' : ''}}>{{ __('store.Admin') }}</option>
-                    <option value="0" {{ old('is_admin') === 0 ? 'selected' : ''}}>{{ __('store.Other') }}</option>
-                </select>
-                @error('is_admin')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
             {{-- <div class="form-group">
                 <label for="product_type_id">{{ __('store.Product_Type') }}</label>
                 <select name="product_type_id" id="product_type_id" class="form-control @error('product_type_id') is-invalid @enderror">

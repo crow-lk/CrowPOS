@@ -110,9 +110,9 @@
                     <div class="col-md-5">
                         <select name="products[]" class="form-control @error('products') is-invalid @enderror">
                             <option value="">{{ __('stockMovement.Select_product') }}</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}" {{ old('products.0') == $product->id ? 'selected' : '' }}>
-                                    {{ $product->name }}
+                            @foreach ($productDetails as $productDetail)
+                                <option value="{{ $productDetail->id }}" {{ old('product_details.0') == $productDetail->id ? 'selected' : '' }}>
+                                    {{ $productDetail->name }}
                                 </option>
                             @endforeach
                         </select>

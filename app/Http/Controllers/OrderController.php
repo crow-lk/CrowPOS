@@ -11,6 +11,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
         $orders = new Order();
         if ($request->start_date) {
             $orders = $orders->where('created_at', '>=', $request->start_date);
@@ -18,7 +19,7 @@ class OrderController extends Controller
         if ($request->end_date) {
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
-        $orders = $orders->with(['items.product', 'payments', 'customer'])->latest()->paginate(10);
+        $orders = $orders->with(['items.product', 'payments', 'customer', 'store', 'items.product.productDetail'])->where('store_id', $user->store_id)->latest()->paginate(10);
 
         $total = $orders->map(function ($i) {
             return $i->total();
@@ -34,9 +35,11 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
+        $user = auth()->user();
         $order = Order::create([
             'customer_id' => $request->customer_id,
             'user_id' => $request->user()->id,
+            'store_id' => $user->store_id,
         ]);
 
         // Loop through the items sent from the frontend

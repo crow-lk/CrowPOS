@@ -10,9 +10,7 @@ class CartController extends Controller
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            return response(
-                $request->user()->cart()->get()
-            );
+            return response()->json($request->user()->cart()->get());
         }
         return view('cart.index');
     }
@@ -22,28 +20,40 @@ class CartController extends Controller
 
         $barcode = $request->barcode;
 
-        $product = Product::where('barcode', $barcode)->first();
-        $cart = $request->user()->cart()->where('barcode', $barcode)->first();
+        // Retrieve the product based on the barcode
+        $product = Product::with('productDetail')->whereHas('productDetail', function($query) use ($barcode) {
+            $query->where('barcode', $barcode);
+        })->first();
+
+        // Check if the product exists
+        if (!$product) {
+            return response()->json(['message' => __('cart.product_not_found')], 404);
+        }
+
+        // Check if the product is already in the cart
+        $cart = $request->user()->cart()->where('product_id', $product->id)->first();
         if ($cart) {
-            // check product quantity
+            // Check product quantity
             if ($product->quantity <= $cart->pivot->quantity) {
-                return response([
+                return response()->json([
                     'message' => __('cart.available', ['quantity' => $product->quantity]),
                 ], 400);
             }
-            // update only quantity
-            $cart->pivot->quantity = $cart->pivot->quantity + 1;
+            // Update only quantity
+            $cart->pivot->quantity += 1;
             $cart->pivot->save();
         } else {
+            // Check if the product is in stock
             if ($product->quantity < 1) {
-                return response([
+                return response()->json([
                     'message' => __('cart.outstock'),
                 ], 400);
             }
+            // Add the product to the cart
             $request->user()->cart()->attach($product->id, ['quantity' => 1]);
         }
 
-        return response('', 204);
+        return response()->json([], 204);
     }
 
     public function changeQty(Request $request)
@@ -54,12 +64,12 @@ class CartController extends Controller
         ]);
 
         $product = Product::find($request->product_id);
-        $cart = $request->user()->cart()->where('id', $request->product_id)->first();
+        $cart = $request->user()->cart()->where('product_id', $request->product_id)->first();
 
         if ($cart) {
-            // check product quantity
+            // Check product quantity
             if ($product->quantity < $request->quantity) {
-                return response([
+                return response()->json([
                     'message' => __('cart.available', ['quantity' => $product->quantity]),
                 ], 400);
             }
@@ -67,9 +77,7 @@ class CartController extends Controller
             $cart->pivot->save();
         }
 
-        return response([
-            'success' => true
-        ]);
+        return response()->json(['success' => true]);
     }
 
     public function delete(Request $request)
@@ -79,13 +87,13 @@ class CartController extends Controller
         ]);
         $request->user()->cart()->detach($request->product_id);
 
-        return response('', 204);
+        return response()->json([], 204);
     }
 
     public function empty(Request $request)
     {
         $request->user()->cart()->detach();
 
-        return response('', 204);
+        return response()->json([], 204);
     }
 }
