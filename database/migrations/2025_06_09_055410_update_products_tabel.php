@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,6 +12,11 @@ return new class extends Migration
      */
     public function up()
     {
+        DB::table('product_details')->insertUsing(
+            ['name', 'description', 'barcode', 'image', 'type', 'price', 'status', 'category_id', 'product_type_id', 'brand_id', 'supplier_id', 'created_at', 'updated_at'],
+            DB::table('products')->select('name', 'description', 'barcode', 'image', 'type', 'price', 'status', 'category_id', 'product_type_id', 'brand_id', 'supplier_id', 'created_at', 'updated_at')
+        );
+
         Schema::table('products', function (Blueprint $table) {
             $table->foreignId('product_detail_id')->nullable()->constrained('product_details')->onDelete('set null');
 
@@ -31,6 +37,15 @@ return new class extends Migration
             $table->dropColumn('price');
             $table->dropColumn('status');
         });
+
+        $products = DB::table('products')->orderBy('id')->get();
+        $productDetailId = 1;
+        foreach ($products as $product) {
+            DB::table('products')
+                ->where('id', $product->id)
+                ->update(['product_detail_id' => $productDetailId]);
+            $productDetailId++;
+        }
     }
     public function down()
     {

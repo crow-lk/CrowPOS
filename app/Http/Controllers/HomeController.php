@@ -28,7 +28,7 @@ class HomeController extends Controller
     {
         $storeId = auth()->user()->store_id;
         $orders = Order::with(['items', 'payments'])->where('store_id', $storeId)->get();
-        $customers_count = Customer::where('store_id', $storeId)->count();
+        $customers_count = Customer::count();
 
            $low_stock_products = Product::where('store_id', $storeId)->whereHas('productDetail', function($query) { $query->where('type', 'product');})->where('quantity', '<', 10)->get();
 

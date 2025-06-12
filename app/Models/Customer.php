@@ -15,13 +15,7 @@ class Customer extends Model
         'address',
         'avatar',
         'user_id',
-        'store_id'
     ];
-
-    public function store()
-    {
-        return $this->belongsTo(Store::class, 'store_id');
-    }
 
     public function getAvatarUrl()
     {
