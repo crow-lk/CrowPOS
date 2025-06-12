@@ -27,7 +27,7 @@ class ProductStoreRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image',
-            'barcode' => 'nullable|string|max:50',
+            'barcode' => 'required|string|max:50',
             'type' => 'required|in:product,service',
             'category_id' => 'required|integer|exists:categories,id',
             'product_type_id' => 'required|integer|exists:product_types,id',
