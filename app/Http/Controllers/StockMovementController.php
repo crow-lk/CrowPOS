@@ -46,7 +46,7 @@ class StockMovementController extends Controller
             'supplier_id' => 'nullable|integer|exists:suppliers,id',
             'products' => 'required|array',
             'reason' => 'nullable|string',
-            'cost_prices' => 'required|array',
+            'cost_prices' => 'nullable|array',
             'quantities' => 'required|array',
             'cost_prices.*' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
             'quantities.*' => 'integer|min:1',

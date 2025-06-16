@@ -10,7 +10,14 @@
 @endsection
 @php
     $user = auth()->user();
-    $productDetails = \App\Models\ProductDetail::paginate(10); // Adjust the number as needed
+    $products = \App\Models\ProductDetail::query(); // Start with a query builder
+
+    // Apply search filter if there is a search term
+    if (request('search')) {
+        $products->where('name', 'LIKE', "%" . request('search') . "%");
+    }
+
+    $productDetails = $products->paginate(10); // Paginate the results
 @endphp
 @section('content')
 <div class="card product-list">
@@ -93,7 +100,7 @@
     </div>
     <div class="d-flex justify-content-center">
 
-        {{ $productDetails->links() }} <!-- This will generate the pagination links -->
+        {{ $productDetails->appends(request()->query())->links() }} <!-- This will generate the pagination links -->
 
     </div>
     </div>

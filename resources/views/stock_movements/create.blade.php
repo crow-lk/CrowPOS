@@ -128,7 +128,7 @@
                     </div>
                     <div class="col-md-3">
                         <input type="number" name="cost_prices[]" class="form-control @error('cost_prices.*') is-invalid @enderror"
-                        placeholder="Cost Price" required>
+                        placeholder="Cost Price">
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-danger delete-product">Delete</button>
