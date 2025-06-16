@@ -21,7 +21,12 @@ class Product extends Model
 
     public function productDetail()
     {
-        return $this->belongsTo(ProductDetail::class, 'product_detail_id');
+        return $this->belongsTo(ProductDetail::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
 }

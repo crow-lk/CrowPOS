@@ -33,16 +33,18 @@ class HomeController extends Controller
            $low_stock_products = Product::where('store_id', $storeId)->whereHas('productDetail', function($query) { $query->where('type', 'product');})->where('quantity', '<', 10)->get();
 
 
-           $bestSellingProducts = DB::table('products')
-            ->join('product_details', 'product_details.id', '=', 'products.product_detail_id')
-            ->join('order_items', 'order_items.product_id', '=', 'products.id')
-            ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->where('product_details.type', 'product')
-            ->where('products.store_id', $storeId) // Filter by store_id
-            ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
-            ->groupBy('products.id')
-            ->havingRaw('SUM(order_items.quantity) > 10')
+           $bestSellingProducts = Product::with(['productDetail', 'orderItems'])
+            ->whereHas('productDetail', function ($query) {
+                $query->where('type', 'product');
+            })
+            ->where('store_id', $storeId) // Filter by store_id
+            ->select('products.*')
+            ->withCount(['orderItems as total_sold' => function ($query) {
+                $query->select(DB::raw('SUM(quantity)'));
+            }])
+            ->having('total_sold', '>', 10)
             ->get();
+
 
 
            $currentMonthBestSelling = DB::table('products')

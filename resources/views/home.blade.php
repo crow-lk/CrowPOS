@@ -261,7 +261,7 @@
                      <tbody>
                         @foreach ($best_selling_products as $product)
                         <tr data-toggle="modal" data-target="#productModalBest{{$product->id}}" style="cursor: pointer;">
-                           <td>{{$product->productDetail->name}}</td>
+                           <td>{{ $product->productDetail ? $product->productDetail->name : 'N/A' }}</td>
                            <td>{{$product->quantity}}</td>
                         </tr>
 
