@@ -121,6 +121,15 @@ class Cart extends Component {
             });
     }
 
+    getAvailableQuantity(productId) {
+        const product = this.state.products.find(p => p.id === productId);
+        if (!product) return 0;
+        const cartItem = this.state.cart.find(c => c.id === productId);
+        const cartQty = cartItem ? cartItem.pivot.quantity : 0;
+        // Available quantity in UI = total stock - quantity in cart
+        return product.quantity - cartQty;
+    }
+
     getTotal(cart) {
         const total = cart.map((c) => {
             const discount = parseFloat(this.state.discounts[c.id]) || 0;
@@ -178,38 +187,49 @@ class Cart extends Component {
     }
 
     addProductToCart(barcode) {
-        let product = this.state.products.find((p) => p.barcode === barcode);
-        if (!!product) {
-            let cart = this.state.cart.find((c) => c.id === product.id);
-            if (!!cart) {
+    let product = this.state.products.find((p) => p.barcode === barcode);
+    if (!!product) {
+        let cartItem = this.state.cart.find((c) => c.id === product.id);
+        if (!!cartItem) {
+            // Update the quantity if the product is already in the cart
+            if (product.quantity > cartItem.pivot.quantity) {
                 this.setState({
                     cart: this.state.cart.map((c) => {
-                        if (c.id === product.id && product.quantity > c.pivot.quantity) {
-                            c.pivot.quantity += 1;
+                        if (c.id === product.id) {
+                            return {
+                                ...c,
+                                pivot: {
+                                    ...c.pivot,
+                                    quantity: c.pivot.quantity + 1,
+                                },
+                            };
                         }
                         return c;
                     }),
                 });
-            } else {
-                if (product.quantity > 0) {
-                    product = {
-                        ...product,
-                        pivot: {
-                            quantity: 1,
-                            product_id: product.id,
-                            user_id: 1,
-                        },
-                    };
-                    this.setState({ cart: [...this.state.cart, product] });
-                }
             }
-            axios.post("/admin/cart", { barcode })
-                .then((res) => {})
-                .catch((err) => {
-                    Swal.fire("Error!", err.response.data.message, "error");
-                });
+        } else {
+            // Add new product to cart
+            if (product.quantity > 0) {
+                product = {
+                    ...product,
+                    pivot: {
+                        quantity: 1,
+                        product_id: product.id,
+                        user_id: 1,
+                    },
+                };
+                this.setState({ cart: [...this.state.cart, product] });
+            }
         }
+        axios.post("/admin/cart", { barcode })
+            .then((res) => {})
+            .catch((err) => {
+                Swal.fire("Error!", err.response.data.message, "error");
+            });
     }
+}
+
 
     setCustomerId(event) {
         this.setState({ customer_id: event.target.value });
@@ -217,6 +237,7 @@ class Cart extends Component {
 
     handleClose = () => {
         this.setState({ showInvoice: false });
+        window.location.reload();
     };
 
     handleDiscountChange(product_id, discount) {
@@ -627,7 +648,7 @@ class Cart extends Component {
                                                                 : "#000000",
                                                     }}
                                                 >
-                                                    {p.name} ({p.quantity})
+                                                    {p.name} ({this.getAvailableQuantity(p.id)})
                                                 </h5>
                                             </div>
                                         ))}

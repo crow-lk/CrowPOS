@@ -17,11 +17,11 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
-
+        $user = auth()->user();
         $barcode = $request->barcode;
 
         // Retrieve the product based on the barcode
-        $product = Product::with('productDetail')->whereHas('productDetail', function($query) use ($barcode) {
+        $product = Product::with('productDetail')->where('store_id', $user->store_id)->whereHas('productDetail', function($query) use ($barcode) {
             $query->where('barcode', $barcode);
         })->first();
 
@@ -53,17 +53,21 @@ class CartController extends Controller
             $request->user()->cart()->attach($product->id, ['quantity' => 1]);
         }
 
+        $product->quantity -= 1;
+        $product->save();
+
         return response()->json([], 204);
     }
 
     public function changeQty(Request $request)
     {
+        $user = auth()->user();
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::find($request->product_id);
+        $product = Product::find($request->product_id)->where('store_id', $user->store_id);
         $cart = $request->user()->cart()->where('product_id', $request->product_id)->first();
 
         if ($cart) {
