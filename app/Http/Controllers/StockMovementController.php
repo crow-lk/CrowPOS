@@ -103,21 +103,21 @@ class StockMovementController extends Controller
                     }
                 } elseif ($request->movement_type === 'adjustment') {
                     // Adjustment: Decrease from_store and increase to_store
-
-                    // Decrease quantity in from_store
-                    $fromProduct = Product::where('product_detail_id', $productDetailId)
-                        ->where('store_id', $request->from_store_id)
-                        ->first();
-
-                    if ($fromProduct) {
-                        $fromProduct->decrement('quantity', $quantity);
+                    // Get the product detail to check its type
+                    $productDetail = ProductDetail::find($productDetailId);
+                    // Decrease quantity in from_store only if it's not a service
+                    if ($productDetail && $productDetail->type !== 'service') {
+                        $fromProduct = Product::where('product_detail_id', $productDetailId)
+                            ->where('store_id', $request->from_store_id)
+                            ->first();
+                        if ($fromProduct) {
+                            $fromProduct->decrement('quantity', $quantity);
+                        }
                     }
-
                     // Increase quantity in to_store
                     $toProduct = Product::where('product_detail_id', $productDetailId)
                         ->where('store_id', $request->to_store_id)
                         ->first();
-
                     if ($toProduct) {
                         $toProduct->increment('quantity', $quantity);
                     } else {

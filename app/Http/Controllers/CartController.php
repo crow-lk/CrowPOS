@@ -53,11 +53,6 @@ class CartController extends Controller
             $request->user()->cart()->attach($product->id, ['quantity' => 1]);
         }
 
-        if ($product->productDetail->type === 'product') {
-            $product->quantity -= 1;
-            $product->save();
-        }
-
         return response()->json([], 204);
     }
 

@@ -186,49 +186,52 @@ class Cart extends Component {
         }
     }
 
-    addProductToCart(barcode) {
-    let product = this.state.products.find((p) => p.barcode === barcode);
-    if (!!product) {
-        let cartItem = this.state.cart.find((c) => c.id === product.id);
-        if (!!cartItem) {
-            // Update the quantity if the product is already in the cart
-            if (product.quantity > cartItem.pivot.quantity) {
-                this.setState({
-                    cart: this.state.cart.map((c) => {
-                        if (c.id === product.id) {
-                            return {
-                                ...c,
-                                pivot: {
-                                    ...c.pivot,
-                                    quantity: c.pivot.quantity + 1,
-                                },
-                            };
-                        }
-                        return c;
-                    }),
-                });
+    addProductToCart(barcode, productId) {
+        let product = this.state.products.find((p) => (barcode ? p.barcode === barcode : false) || (productId ? p.id === productId : false));
+        if (!!product) {
+            let cartItem = this.state.cart.find((c) => c.id === product.id);
+            if (!!cartItem) {
+                // Update the quantity if the product is already in the cart
+                if (product.quantity > cartItem.pivot.quantity) {
+                    this.setState({
+                        cart: this.state.cart.map((c) => {
+                            if (c.id === product.id) {
+                                return {
+                                    ...c,
+                                    pivot: {
+                                        ...c.pivot,
+                                        quantity: c.pivot.quantity + 1,
+                                    },
+                                };
+                            }
+                            return c;
+                        }),
+                    });
+                }
+            } else {
+                // Add new product to cart
+                if (product.quantity > 0) {
+                    product = {
+                        ...product,
+                        pivot: {
+                            quantity: 1,
+                            product_id: product.id,
+                            user_id: 1,
+                        },
+                    };
+                    this.setState({ cart: [...this.state.cart, product] });
+                }
             }
-        } else {
-            // Add new product to cart
-            if (product.quantity > 0) {
-                product = {
-                    ...product,
-                    pivot: {
-                        quantity: 1,
-                        product_id: product.id,
-                        user_id: 1,
-                    },
-                };
-                this.setState({ cart: [...this.state.cart, product] });
+            // Only post to the cart if it's a product
+            if (product.type === "product") {
+                axios.post("/admin/cart", { barcode })
+                    .then((res) => {})
+                    .catch((err) => {
+                        Swal.fire("Error!", err.response.data.message, "error");
+                    });
             }
         }
-        axios.post("/admin/cart", { barcode })
-            .then((res) => {})
-            .catch((err) => {
-                Swal.fire("Error!", err.response.data.message, "error");
-            });
     }
-}
 
 
     setCustomerId(event) {
@@ -662,7 +665,7 @@ class Cart extends Component {
                                 <h2>Services</h2>
                                 <div
                                     style={{
-                                        maxHeight: "350px", // Set a fixed height
+                                        maxHeight: "400px", // Set a fixed height
                                         overflowY: "auto",
                                         display: "grid",
                                         gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
@@ -674,7 +677,7 @@ class Cart extends Component {
                                         .map((p) => (
                                             <div
                                                 key={p.id}
-                                                onClick={() => this.addProductToCart(p.barcode)}
+                                                onClick={() => this.addProductToCart(null,p.id)}
                                                 style={{
                                                     border: isDarkMode ? "1px solid #444" : "1px solid #ddd",
                                                     borderRadius: "10px",

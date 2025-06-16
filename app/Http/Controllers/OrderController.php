@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderStoreRequest;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -44,16 +45,28 @@ class OrderController extends Controller
 
         // Loop through the items sent from the frontend
         foreach ($request->items as $itemData) {
-            $order->items()->create([
+            // Create the order item
+            $orderItem = $order->items()->create([
                 'price' => $itemData['price'], // Use the updated price
                 'quantity' => $itemData['quantity'],
                 'product_id' => $itemData['product_id'],
                 'discount' => $itemData['discount'], // Save discount
             ]);
+
+            // Retrieve the product using the product_id
+            $product = Product::find($itemData['product_id']);
+
+            // Check if the product exists and is of type 'product'
+            if ($product && $product->productDetail->type === 'product') {
+                $product->quantity -= $itemData['quantity']; // Decrease by the quantity ordered
+                $product->save();
+            }
         }
 
         // Clear the cart after creating the order
         $request->user()->cart()->detach();
+
+        // Create the payment for the order
         $order->payments()->create([
             'amount' => $request->amount,
             'user_id' => $request->user()->id,
@@ -64,6 +77,7 @@ class OrderController extends Controller
             'order_id' => $order->id,
         ]);
     }
+
 
     public function partialPayment(Request $request)
     {
