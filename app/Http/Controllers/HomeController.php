@@ -47,31 +47,33 @@ class HomeController extends Controller
 
 
 
-           $currentMonthBestSelling = DB::table('products')
-            ->join('product_details', 'product_details.id', '=', 'products.product_detail_id')
-            ->join('order_items', 'order_items.product_id', '=', 'products.id')
-            ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->where('product_details.type', 'product')
-            ->where('products.store_id', $storeId) // Filter by store_id
-            ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
-            ->whereYear('orders.created_at', date('Y'))
-            ->whereMonth('orders.created_at', date('m'))
-            ->groupBy('products.id')
-            ->havingRaw('SUM(order_items.quantity) > 500')
-            ->get();
-
-
-        $pastSixMonthsHotProducts = DB::table('products')
-            ->join('product_details', 'product_details.id', '=', 'products.product_detail_id')
-            ->join('order_items', 'order_items.product_id', '=', 'products.id')
-            ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->where('product_details.type', 'product')
-            ->where('products.store_id', $storeId) // Filter by store_id
-            ->where('orders.created_at', '>=', now()->subMonths(6))
-            ->select('products.*', DB::raw('SUM(order_items.quantity) AS total_sold'))
-            ->groupBy('products.id')
-            ->havingRaw('SUM(order_items.quantity) > 1000')
-            ->get();
+           $currentMonthBestSelling = Product::with(['productDetail', 'orderItems'])
+                ->whereHas('productDetail', function ($query) {
+                    $query->where('type', 'product');
+                })
+                ->where('store_id', $storeId)
+                ->withCount(['orderItems as total_sold' => function ($query) {
+                    // Filter order items to only those linked to orders in current year and month
+                    $query->whereHas('order', function ($query) {
+                        $query->whereYear('created_at', date('Y'))
+                            ->whereMonth('created_at', date('m'));
+                    })->select(DB::raw('SUM(quantity)'));
+                }])
+                ->having('total_sold', '>', 500)
+                ->get();
+            $pastSixMonthsHotProducts = Product::with(['productDetail', 'orderItems'])
+                ->whereHas('productDetail', function ($query) {
+                    $query->where('type', 'product');
+                })
+                ->where('store_id', $storeId)
+                ->withCount(['orderItems as total_sold' => function ($query) {
+                    // Filter order items to only those linked to orders created in last 6 months
+                    $query->whereHas('order', function ($query) {
+                        $query->where('created_at', '>=', now()->subMonths(6));
+                    })->select(DB::raw('SUM(quantity)'));
+                }])
+                ->having('total_sold', '>', 1000)
+                ->get();
 
 
 
