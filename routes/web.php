@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\StoreController;
@@ -36,6 +37,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('suppliers', SupplierController::class);
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');

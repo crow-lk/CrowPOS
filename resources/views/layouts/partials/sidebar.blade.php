@@ -105,6 +105,14 @@
                     </a>
                 </li>
 
+                <!-- Reports -->
+                <li class="nav-item">
+                    <a href="{{ route('reports.index') }}" class="nav-link {{ activeSegment('reports') }}">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>{{ __('report.title') }}</p>
+                    </a>
+                </li>
+
                 <!-- Settings -->
                 <li class="nav-item">
                     <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
