@@ -242,11 +242,11 @@
             <div class="card-header">
                 <h3 class="card-title">Outstanding Orders</h3>
                 <div class="card-tools">
-                    <span class="badge badge-warning">{{ count($outstandingOrders) }} Orders with Partial Payments</span>
+                    <span class="badge badge-warning">{{ $outstandingOrders->total() }} Orders with Partial Payments</span>
                 </div>
             </div>
             <div class="card-body">
-                @if(count($outstandingOrders) > 0)
+                @if($outstandingOrders->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-hover align-middle shadow-lg rounded"
                             style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; overflow: hidden; width: 100%;">
@@ -290,6 +290,19 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            <p class="text-muted mb-0">
+                                Showing {{ $outstandingOrders->firstItem() }} to {{ $outstandingOrders->lastItem() }} 
+                                of {{ $outstandingOrders->total() }} results
+                            </p>
+                        </div>
+                        <div>
+                            {{ $outstandingOrders->links() }}
+                        </div>
                     </div>
                 @else
                     <div class="text-center py-4">

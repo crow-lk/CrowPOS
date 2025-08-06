@@ -67,23 +67,31 @@ class ReportController extends Controller
         $newCustomersThisMonth = Customer::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->count();
         
         // Outstanding Orders (orders with partial payments or items with balance_amount)
-        $outstandingOrders = Order::where('store_id', $user->store_id)
+        $outstandingOrdersQuery = Order::where('store_id', $user->store_id)
             ->with(['customer', 'payments', 'items'])
             ->whereHas('items', function($query) {
                 $query->whereNotNull('balance_amount');
             })
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->filter(function ($order) {
-                // Check if order has items with balance_amount or partial payments
-                $hasBalanceAmount = $order->items->where('balance_amount', '!=', null)->count() > 0;
-                $totalAmount = $order->total();
-                $receivedAmount = $order->receivedAmount();
-                $hasPartialPayment = $receivedAmount > 0 && $receivedAmount < $totalAmount;
-                
-                return $hasBalanceAmount || $hasPartialPayment;
-            })
-            ->map(function ($order) {
+            ->orderBy('created_at', 'desc');
+
+        // Get all orders first to filter them
+        $allOrders = $outstandingOrdersQuery->get()->filter(function ($order) {
+            // Check if order has items with balance_amount or partial payments
+            $hasBalanceAmount = $order->items->where('balance_amount', '!=', null)->count() > 0;
+            $totalAmount = $order->total();
+            $receivedAmount = $order->receivedAmount();
+            $hasPartialPayment = $receivedAmount > 0 && $receivedAmount < $totalAmount;
+            
+            return $hasBalanceAmount || $hasPartialPayment;
+        });
+
+        // Get current page from request
+        $currentPage = request()->get('page', 1);
+        $perPage = 20;
+        
+        // Create a paginator manually
+        $outstandingOrders = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allOrders->forPage($currentPage, $perPage)->map(function ($order) {
                 return [
                     'id' => $order->id,
                     'customer_name' => $order->getCustomerName(),
@@ -100,7 +108,15 @@ class ReportController extends Controller
                         ];
                     })->values(),
                 ];
-            });
+            }),
+            $allOrders->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
         
         return view('reports.index', compact(
             'totalSales',
