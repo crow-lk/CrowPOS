@@ -43,14 +43,35 @@ class OrderController extends Controller
             'store_id' => $user->store_id,
         ]);
 
+        // Calculate total amount and received amount
+        $totalAmount = floatval($request->amount);
+        $receivedAmount = floatval($request->received_amount ?? $request->amount);
+        
+        // Calculate total items value for proportional distribution
+        $totalItemsValue = 0;
+        foreach ($request->items as $itemData) {
+            $itemTotal = ($itemData['price'] * $itemData['quantity']) - ($itemData['discount'] ?? 0);
+            $totalItemsValue += $itemTotal;
+        }
+
         // Loop through the items sent from the frontend
         foreach ($request->items as $itemData) {
+            $itemTotal = ($itemData['price'] * $itemData['quantity']) - ($itemData['discount'] ?? 0);
+            
+            // Calculate proportional customer payment for this item
+            $itemCustomerPay = $totalItemsValue > 0 ? ($itemTotal / $totalItemsValue) * $receivedAmount : 0;
+            
+            // Calculate balance for this item (customer payment - item total)
+            $itemBalance = $itemCustomerPay - $itemTotal;
+
             // Create the order item
             $orderItem = $order->items()->create([
                 'price' => $itemData['price'], // Use the updated price
                 'quantity' => $itemData['quantity'],
                 'product_id' => $itemData['product_id'],
-                'discount' => $itemData['discount'], // Save discount
+                'discount' => $itemData['discount'] ?? 0, // Save discount
+                'customer_pay_amount' => round($itemCustomerPay, 2),
+                'balance_amount' => round($itemBalance, 2),
             ]);
 
             // Retrieve the product using the product_id
@@ -68,7 +89,7 @@ class OrderController extends Controller
 
         // Create the payment for the order
         $order->payments()->create([
-            'amount' => $request->amount,
+            'amount' => $receivedAmount,
             'user_id' => $request->user()->id,
         ]);
 

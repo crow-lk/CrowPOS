@@ -61,6 +61,62 @@
       </div>
    </div>
 
+   <!-- Outstanding Customers Widget -->
+   <div class="row mt-4">
+      <div class="col-12">
+         <div class="card shadow-sm">
+            <div class="card-header bg-gradient-secondary d-flex align-items-center">
+               <h4 class="card-title mb-0 text-white"><i class="fas fa-exclamation-circle mr-2"></i> {{ __('dashboard.Outstanding_Customers') }}</h4>
+            </div>
+            <div class="card-body">
+               @if($outstanding_customers->count() > 0)
+                  <div class="table-responsive">
+                     <table class="table table-hover table-striped rounded overflow-hidden">
+                        <thead class="bg-light">
+                           <tr>
+                              <th>{{ __('dashboard.Customer_Name') }}</th>
+                              <th class="text-right">{{ __('dashboard.Outstanding_Amount') }}</th>
+                              <th class="text-center">Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           @foreach ($outstanding_customers as $customer)
+                           <tr>
+                              <td class="font-weight-bold">{{$customer->full_name}}</td>
+                              <td class="text-right text-danger font-weight-bold">
+                                 {{config('settings.currency_symbol')}} {{number_format($customer->total_outstanding, 2)}}
+                              </td>
+                              <td class="text-center">
+                                 <a href="{{ route('customers.index') }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View Details
+                                 </a>
+                              </td>
+                           </tr>
+                           @endforeach
+                        </tbody>
+                        <tfoot class="bg-light">
+                           <tr>
+                              <th>Total Outstanding:</th>
+                              <th class="text-right text-danger font-weight-bold">
+                                 {{config('settings.currency_symbol')}} {{number_format($outstanding_customers->sum('total_outstanding'), 2)}}
+                              </th>
+                              <th></th>
+                           </tr>
+                        </tfoot>
+                     </table>
+                  </div>
+               @else
+                  <div class="text-center py-4">
+                     <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                     <h5 class="mt-3 text-muted">{{ __('dashboard.No_Outstanding') }}</h5>
+                     <p class="text-muted">All customers have settled their accounts!</p>
+                  </div>
+               @endif
+            </div>
+         </div>
+      </div>
+   </div>
+
    <!-- Low Stock Products -->
    <div class="row mt-4">
       <div class="col-12 col-md-6">

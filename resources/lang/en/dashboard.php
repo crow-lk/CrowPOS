@@ -29,6 +29,10 @@ return [
     'Low_Stock_Products' => 'Low Stock Products',
     'Hot_Products' => 'Hot Products',
     'Best_Selling_Products' => 'Best Selling Products',
+    'Outstanding_Customers' => 'Outstanding Customers',
+    'Outstanding_Amount' => 'Outstanding Amount',
+    'Customer_Name' => 'Customer Name',
+    'No_Outstanding' => 'No outstanding customers found',
 
 
 ];

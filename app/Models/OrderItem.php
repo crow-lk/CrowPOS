@@ -10,6 +10,8 @@ class OrderItem extends Model
         'price',
         'quantity',
         'discount',
+        'customer_pay_amount',
+        'balance_amount',
         'product_id',
         'order_id'
     ];

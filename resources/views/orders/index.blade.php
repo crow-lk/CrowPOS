@@ -164,6 +164,8 @@
                 <td class="text-right">${parseFloat(item.product.price).toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td class="text-right">${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+                <td class="text-right">{{config('settings.currency_symbol')}} ${parseFloat(item.customer_pay_amount || 0).toFixed(2)}</td>
+                <td class="text-right ${parseFloat(item.balance_amount || 0) >= 0 ? 'text-success' : 'text-danger'}">{{config('settings.currency_symbol')}} ${parseFloat(item.balance_amount || 0).toFixed(2)}</td>
             </tr>
         `;
             });
@@ -204,6 +206,8 @@
                             <th class="text-right">Unit Cost</th>
                             <th>Qty</th>
                             <th class="text-right">Total</th>
+                            <th class="text-right">Customer Pay</th>
+                            <th class="text-right">Balance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -211,39 +215,39 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <th class="text-right" colspan="5">
+                        <th class="text-right" colspan="6">
                           Sub-Total:
                         </th>
-                        <th class="right text-right">
+                        <th class="right text-right" colspan="2">
                           <strong>{{config('settings.currency_symbol')}} ${parseFloat(subTotal).toFixed(2)}</strong>
                         </th>
                       </tr>
                       <tr>
-                        <th class="text-right" colspan="5">
+                        <th class="text-right" colspan="6">
                           Discounted Amount:
                         </th>
-                        <th class="right text-right">
+                        <th class="right text-right" colspan="2">
                           <strong>{{config('settings.currency_symbol')}} ${parseFloat(discount).toFixed(2)}</strong>
                         </th>
                       </tr>
                       <tr>
-                        <th class="text-right" colspan="5">
+                        <th class="text-right" colspan="6">
                           Total:
                         </th>
-                        <th class="right text-right">
+                        <th class="right text-right" colspan="2">
                           <strong>{{config('settings.currency_symbol')}} ${parseFloat(totalAmount).toFixed(2)}</strong>
                         </th>
                       </tr>
 
                       <tr>
-                        <th class="text-right" colspan="5">
+                        <th class="text-right" colspan="6">
                           Paid:
                         </th>
-                        <th class="right text-right">
+                        <th class="right text-right" colspan="2">
                           <strong>{{config('settings.currency_symbol')}} ${parseFloat(receivedAmount).toFixed(2)}</strong>
                         </th>
                       </tr>
-                    </tfood>
+                    </tfoot>
                 </table>
             </div>
         </div>

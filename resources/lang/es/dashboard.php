@@ -25,4 +25,8 @@ return [
     'Income_Today'      => 'Ingresos Hoy',
     'Customers_Count'   => 'Cantidad de Clientes',
     'Orders_Count'      => 'Cantidad de Pedidos',
+    'Outstanding_Customers' => 'Clientes con Deudas',
+    'Outstanding_Amount' => 'Monto Pendiente',
+    'Customer_Name' => 'Nombre del Cliente',
+    'No_Outstanding' => 'No se encontraron clientes con deudas',
 ];

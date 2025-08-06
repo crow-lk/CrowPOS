@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -79,6 +80,9 @@ class HomeController extends Controller
 
 
 
+        // Get outstanding customers (customers with negative balance amounts)
+        $outstanding_customers = $this->getOutstandingCustomers($storeId);
+
         return view('home', [
             'orders_count' => $orders->count(),
             'income' => $orders->map(function ($i) {
@@ -92,6 +96,37 @@ class HomeController extends Controller
             'best_selling_products' => $bestSellingProducts,
             'current_month_products' => $currentMonthBestSelling,
             'past_months_products' => $pastSixMonthsHotProducts,
+            'outstanding_customers' => $outstanding_customers,
         ]);
+    }
+
+    /**
+     * Get customers with outstanding balances (negative balance amounts)
+     *
+     * @param int $storeId
+     * @return \Illuminate\Support\Collection
+     */
+    private function getOutstandingCustomers($storeId)
+    {
+        return Customer::select([
+            'customers.id',
+            'customers.first_name',
+            'customers.last_name',
+            DB::raw('SUM(order_items.balance_amount) as total_outstanding')
+        ])
+        ->join('orders', 'customers.id', '=', 'orders.customer_id')
+        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->where('orders.store_id', $storeId)
+        ->whereNotNull('order_items.balance_amount')
+        ->groupBy('customers.id', 'customers.first_name', 'customers.last_name')
+        ->havingRaw('SUM(order_items.balance_amount) < 0') // Only customers with negative balance (owing money)
+        ->orderBy('total_outstanding', 'asc') // Most owing first
+        ->limit(10) // Limit to top 10 customers
+        ->get()
+        ->map(function ($customer) {
+            $customer->total_outstanding = abs($customer->total_outstanding); // Convert to positive for display
+            $customer->full_name = $customer->first_name . ' ' . $customer->last_name;
+            return $customer;
+        });
     }
 }
