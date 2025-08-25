@@ -107,7 +107,7 @@ class Cart extends Component {
 
     handleChangeQty(product_id, qty) {
         const cart = this.state.cart.map((c) => {
-            if (product && product.type === "product") {
+            if (c.id === product_id && c.type === "product") {
                 c.pivot.quantity = qty;
             }
             return c;
