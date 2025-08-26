@@ -61,6 +61,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  warrantyText: {
+    textAlign: 'center',
+    fontSize: 8,
+    marginTop: 4,
+    marginBottom: 4,
+    opacity: 0.8,
+  },
 
 
 });
@@ -132,8 +139,10 @@ const Invoice = ({ orderData }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 }}>
           <Text style={{ textAlign: 'center', fontSize: 10 }}>076 966 8478</Text>
         </View>
+        </View>
 
-
+        <View style={{ marginTop: 6 }}>
+          <Text style={styles.warrantyText}>6-month warranty applies to items with store-selected warranty sticker</Text>
         </View>
         <View style={{ marginTop: 6 }}>
 
