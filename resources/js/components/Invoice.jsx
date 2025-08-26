@@ -85,7 +85,7 @@ const Invoice = ({ orderData }) => {
 
           <Text style={styles.header}>GRS Mobile</Text>
           <Text style={styles.header1}>Main street, Pelmadulla</Text>
-          <Text style={styles.header1}>+94 76 966 8478</Text>
+          <Text style={[styles.header1, { fontWeight: 'bold' }]}>076 966 8478</Text>
         </View>
 
 
@@ -129,13 +129,15 @@ const Invoice = ({ orderData }) => {
 
         <View style={{ marginTop: 6 }}>
           <Text style={{ textAlign: 'center' }}>Thank you! Come Again.</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 }}>
+          <Text style={{ textAlign: 'center', fontSize: 10 }}>076 966 8478</Text>
+        </View>
 
 
         </View>
         <View style={{ marginTop: 6 }}>
 
-          <Text style={{ textAlign: 'center',fontSize: 8 ,marginBottom:2 }}>Developed by crow.lk</Text>
-          <Text style={{ textAlign: 'center',fontSize: 8  }}>contact +94 77 437 9390</Text>
+          <Text style={{ textAlign: 'center', fontSize: 8, opacity: 0.6 }}>Developed by crow.lk | contact 077 437 9390</Text>
 
         </View>
         </View>
