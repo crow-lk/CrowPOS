@@ -3,6 +3,8 @@
 @section('title', __('stockMovement.Create_stockMovement'))
 @section('content-header', __('stockMovement.Create_stockMovement'))
 
+
+
 @section('content')
 
     <div class="card">
@@ -108,14 +110,14 @@
             <div id="products-rows">
                 <div class="product-row row mb-2">
                     <div class="col-md-5">
-                        <select name="products[]" class="form-control @error('products') is-invalid @enderror">
-                            <option value="">{{ __('stockMovement.Select_product') }}</option>
-                            @foreach ($productDetails as $productDetail)
-                                <option value="{{ $productDetail->id }}" {{ old('product_details.0') == $productDetail->id ? 'selected' : '' }}>
-                                    {{ $productDetail->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="position-relative">
+                            <input type="text" class="form-control product-search-input @error('products') is-invalid @enderror" 
+                                   placeholder="Type to search products..." 
+                                   autocomplete="off">
+                            <input type="hidden" name="products[]" class="product-id-input">
+                            <div class="product-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ced4da; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000;">
+                            </div>
+                        </div>
                         @error('products.*')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -160,30 +162,147 @@
     <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const addProductButton = document.getElementById('add-product');
-            const productRowsContainer = document.getElementById('products-rows');
-            addProductButton.addEventListener('click', function () {
-                const newProductRow = productRowsContainer.firstElementChild.cloneNode(true);
-                const inputs = newProductRow.querySelectorAll('input, select');
-                // Clear the values of the cloned inputs
-                inputs.forEach(input => {
-                    input.value = '';
-                    input.classList.remove('is-invalid');
+        $(document).ready(function() {
+            // Product data for autocomplete
+            const products = [
+                @foreach ($productDetails as $productDetail)
+                {
+                    id: {{ $productDetail->id }},
+                    name: "{{ addslashes($productDetail->name) }}"
+                },
+                @endforeach
+            ];
+
+            // Initialize autocomplete on existing product search inputs
+            function initializeAutocomplete(container) {
+                container.find('.product-search-input').each(function() {
+                    const $input = $(this);
+                    const $hiddenInput = $input.siblings('.product-id-input');
+                    const $suggestions = $input.siblings('.product-suggestions');
+
+                    if ($input.data('autocomplete-initialized')) return;
+                    $input.data('autocomplete-initialized', true);
+
+                    $input.on('input', function() {
+                        const query = $(this).val().toLowerCase();
+                        
+                        if (query.length === 0) {
+                            $suggestions.hide().empty();
+                            $hiddenInput.val('');
+                            return;
+                        }
+
+                        const matches = products.filter(product => 
+                            product.name.toLowerCase().includes(query)
+                        ).slice(0, 10); // Limit to 10 results
+
+                        if (matches.length > 0) {
+                            const suggestionsHtml = matches.map(product => 
+                                `<div class="suggestion-item" data-id="${product.id}" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                    ${product.name}
+                                </div>`
+                            ).join('');
+                            
+                            $suggestions.html(suggestionsHtml).show();
+                        } else {
+                            $suggestions.html('<div style="padding: 8px 12px; color: #666;">No products found</div>').show();
+                        }
+                    });
+
+                    // Handle suggestion clicks
+                    $suggestions.on('click', '.suggestion-item', function() {
+                        const productId = $(this).data('id');
+                        const productName = $(this).text();
+                        
+                        $input.val(productName);
+                        $hiddenInput.val(productId);
+                        $suggestions.hide();
+                    });
+
+                    // Hide suggestions when clicking outside
+                    $(document).on('click', function(e) {
+                        if (!$input.closest('.position-relative').is(e.target) && 
+                            !$input.closest('.position-relative').has(e.target).length) {
+                            $suggestions.hide();
+                        }
+                    });
+
+                    // Handle keyboard navigation
+                    $input.on('keydown', function(e) {
+                        const $items = $suggestions.find('.suggestion-item');
+                        const $current = $items.filter('.highlighted');
+                        
+                        if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            if ($current.length === 0) {
+                                $items.first().addClass('highlighted').css('background-color', '#f8f9fa');
+                            } else {
+                                $current.removeClass('highlighted').css('background-color', '');
+                                const next = $current.next('.suggestion-item');
+                                if (next.length) {
+                                    next.addClass('highlighted').css('background-color', '#f8f9fa');
+                                } else {
+                                    $items.first().addClass('highlighted').css('background-color', '#f8f9fa');
+                                }
+                            }
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            if ($current.length === 0) {
+                                $items.last().addClass('highlighted').css('background-color', '#f8f9fa');
+                            } else {
+                                $current.removeClass('highlighted').css('background-color', '');
+                                const prev = $current.prev('.suggestion-item');
+                                if (prev.length) {
+                                    prev.addClass('highlighted').css('background-color', '#f8f9fa');
+                                } else {
+                                    $items.last().addClass('highlighted').css('background-color', '#f8f9fa');
+                                }
+                            }
+                        } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if ($current.length) {
+                                $current.click();
+                            }
+                        } else if (e.key === 'Escape') {
+                            $suggestions.hide();
+                        }
+                    });
                 });
-                // Add delete button functionality
-                const deleteButton = newProductRow.querySelector('.delete-product');
-                deleteButton.addEventListener('click', function () {
-                    productRowsContainer.removeChild(newProductRow);
+            }
+
+            // Initialize autocomplete on page load
+            initializeAutocomplete($('#products-rows'));
+
+            // Handle adding new product rows
+            $('#add-product').on('click', function() {
+                const productRowsContainer = $('#products-rows');
+                const newProductRow = productRowsContainer.find('.product-row:first').clone();
+                
+                // Clear values
+                newProductRow.find('input').val('').removeClass('is-invalid');
+                newProductRow.find('.product-suggestions').hide().empty();
+                
+                // Remove autocomplete initialization flag
+                newProductRow.find('.product-search-input').removeData('autocomplete-initialized');
+                
+                // Add to container
+                productRowsContainer.append(newProductRow);
+                
+                // Initialize autocomplete on new row
+                initializeAutocomplete(newProductRow);
+                
+                // Wire up delete button for the new row
+                newProductRow.find('.delete-product').off('click').on('click', function() {
+                    newProductRow.remove();
                 });
-                productRowsContainer.appendChild(newProductRow);
             });
-            // Add delete functionality to the existing delete button
-            const existingDeleteButtons = productRowsContainer.querySelectorAll('.delete-product');
-            existingDeleteButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    productRowsContainer.removeChild(button.closest('.product-row'));
-                });
+
+            // Handle delete for existing rows
+            $(document).on('click', '.delete-product', function() {
+                const row = $(this).closest('.product-row');
+                if ($('#products-rows .product-row').length > 1) {
+                    row.remove();
+                }
             });
         });
     </script>
