@@ -12,11 +12,18 @@
     <div class="col-md-12">
         <form action="{{route('orders.index')}}">
             <div class="row g-2">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="date" name="start_date" class="form-control" value="{{request('start_date')}}" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="date" name="end_date" class="form-control" value="{{request('end_date')}}" />
+                </div>
+                <div class="col-md-4">
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="{{ __('order.Search_Placeholder') }}"
+                           value="{{ request('search') }}" />
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-outline-primary w-100" type="submit">{{ __('order.submit') }}</button>
@@ -67,6 +74,17 @@
                 <td class="text-center px-4 py-3">{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
                 <td class="text-center px-4 py-3 text-muted">{{$order->created_at}}</td>
                 <td class="text-center px-4 py-3">
+                    @php
+                        $outstandingAmount = max($order->total() - $order->receivedAmount(), 0);
+                    @endphp
+                    @if($outstandingAmount > 0)
+                    <button class="btn btn-sm btn-outline-success mb-1 btnPartialPayment" data-toggle="modal"
+                        data-target="#partialPaymentModal"
+                        data-order-id="{{ $order->id }}"
+                        data-remaining-amount="{{ number_format($outstandingAmount, 2, '.', '') }}">
+                        <i class="fas fa-wallet"></i> {{ __('order.Receive_Payment') }}
+                    </button>
+                    @endif
                     <button class="btn btn-sm btn-secondary btnShowInvoice" data-toggle="modal"
                         data-target="#modalInvoice"
                         data-order-id="{{ $order->id }}"
@@ -109,6 +127,49 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="partialPaymentModal" tabindex="-1" role="dialog" aria-labelledby="partialPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form method="POST" action="{{ route('orders.partial-payment') }}" id="partialPaymentForm" class="modal-content">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title" id="partialPaymentModalLabel">{{ __('order.Receive_Payment') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="order_id" id="modalOrderId" value="{{ old('order_id') }}">
+                <div class="alert alert-warning" role="alert">
+                    <strong>{{ __('order.To_Pay') }}:</strong>
+                    {{ config('settings.currency_symbol') }}
+                    <span id="remainingAmountLabel">0.00</span>
+                </div>
+                <div class="form-group">
+                    <label for="partialAmount">{{ __('order.Received_Amount') }}</label>
+                    <input type="number"
+                           class="form-control"
+                           id="partialAmount"
+                           name="amount"
+                           step="0.01"
+                           min="0.01"
+                           value="{{ old('amount') }}"
+                           required>
+                    @error('amount')
+                        <small class="text-danger d-block mt-1">{{ $message }}</small>
+                    @enderror
+                    @error('order_id')
+                        <small class="text-danger d-block mt-1">{{ $message }}</small>
+                    @enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.Close') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('common.Submit') }}</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -257,20 +318,38 @@
 `);
     });
     $(document).ready(function() {
-    // Event handler when the partial payment modal is triggered
-    $('#partialPaymentModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
+        $('#partialPaymentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var orderId = button.data('order-id');
+            var remainingAmount = parseFloat(button.data('remaining-amount')) || 0;
 
-        // Get the order ID from data-attributes
-        var orderId = button.data('orders-id');
-        var remainingAmount = button.data('remaining-amount');
+            var modal = $(this);
+            modal.find('#modalOrderId').val(orderId);
+            modal.find('#remainingAmountLabel').text(remainingAmount.toFixed(2));
+            modal.find('#partialAmount')
+                .attr('max', remainingAmount.toFixed(2))
+                .val(remainingAmount > 0 ? remainingAmount.toFixed(2) : '');
+        });
 
-        // Find modal and set the order ID in the hidden field
-        var modal = $(this);
-        modal.find('#modalOrderId').val(orderId);
-        modal.find('#partialAmount').attr('max', remainingAmount); // Set max value for partial payment
+        @if ($errors->has('amount') || $errors->has('order_id'))
+            var previousOrderId = @json(old('order_id'));
+            var previousAmount = @json(old('amount'));
+
+            if (previousOrderId) {
+                var triggerButton = $('[data-target="#partialPaymentModal"][data-order-id="' + previousOrderId + '"]').first();
+                if (triggerButton.length) {
+                    var outstanding = parseFloat(triggerButton.data('remaining-amount')) || 0;
+                    $('#modalOrderId').val(previousOrderId);
+                    $('#remainingAmountLabel').text(outstanding.toFixed(2));
+                    $('#partialAmount')
+                        .attr('max', outstanding.toFixed(2))
+                        .val(previousAmount ? parseFloat(previousAmount).toFixed(2) : (outstanding > 0 ? outstanding.toFixed(2) : ''));
+                }
+            }
+
+            $('#partialPaymentModal').modal('show');
+        @endif
     });
-});
 
 </script>
 @endsection

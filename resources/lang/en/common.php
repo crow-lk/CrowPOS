@@ -25,6 +25,8 @@ return [
     'Active'        => 'Active',
     'Inactive'      => 'Inactive',
     'More_info'     => 'More info',
+    'Submit'        => 'Submit',
+    'Close'         => 'Close',
 
     //==========================================
     // Footer messages

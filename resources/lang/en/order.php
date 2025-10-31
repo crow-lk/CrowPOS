@@ -35,6 +35,8 @@ return [
     'Partial'           => 'Partial',
     'Paid'              => 'Paid',
     'Change'            => 'Change',
-    'Actions'           => 'Actions'
+    'Actions'           => 'Actions',
+    'Receive_Payment'   => 'Receive Payment',
+    'Search_Placeholder'=> 'Search by order ID, customer name, or phone',
 
 ];

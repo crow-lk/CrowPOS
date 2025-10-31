@@ -13,14 +13,35 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $orders = new Order();
+        $orders = Order::query();
         if ($request->start_date) {
             $orders = $orders->where('created_at', '>=', $request->start_date);
         }
         if ($request->end_date) {
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
-        $orders = $orders->with(['items.product', 'payments', 'customer', 'store', 'items.product.productDetail'])->where('store_id', $user->store_id)->latest()->paginate(10);
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $orders->where(function ($query) use ($search) {
+                $query->whereHas('customer', function ($customerQuery) use ($search) {
+                    $customerQuery->where(function ($nameQuery) use ($search) {
+                        $nameQuery->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $search . '%')
+                            ->orWhere('first_name', 'like', '%' . $search . '%')
+                            ->orWhere('last_name', 'like', '%' . $search . '%')
+                            ->orWhere('phone', 'like', '%' . $search . '%');
+                    });
+                });
+
+                if (is_numeric($search)) {
+                    $query->orWhere('id', (int) $search);
+                }
+            });
+        }
+        $orders = $orders->with(['items.product', 'payments', 'customer', 'store', 'items.product.productDetail'])
+            ->where('store_id', $user->store_id)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         $total = $orders->map(function ($i) {
             return $i->total();
@@ -102,27 +123,73 @@ class OrderController extends Controller
 
     public function partialPayment(Request $request)
     {
-        // return $request;
-        $orderId = $request->order_id;
-        $amount = $request->amount;
+        $request->validate([
+            'order_id' => ['required', 'exists:orders,id'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
 
-        // Find the order
-        $order = Order::findOrFail($orderId);
+        $order = Order::with('items')->findOrFail($request->input('order_id'));
+        $amount = round((float) $request->input('amount'), 2);
 
-        // Check if the amount exceeds the remaining balance
-        $remainingAmount = $order->total() - $order->receivedAmount();
-        if ($amount > $remainingAmount) {
-            return redirect()->route('orders.index')->withErrors('Amount exceeds remaining balance');
+        $remainingAmount = round($order->total() - $order->receivedAmount(), 2);
+        if ($amount - $remainingAmount > 0.009) {
+            return redirect()
+                ->route('orders.index')
+                ->withErrors(['amount' => 'Amount exceeds remaining balance'])
+                ->withInput($request->only(['order_id', 'amount']));
         }
 
-        // Save the payment
         DB::transaction(function () use ($order, $amount) {
             $order->payments()->create([
                 'amount' => $amount,
-                'user_id' => auth()->user()->id,
+                'user_id' => auth()->id(),
             ]);
+
+            $this->applyPaymentToOrderItems($order, $amount);
         });
 
-        return redirect()->route('orders.index')->with('success', 'Partial payment of ' . config('settings.currency_symbol') . number_format($amount, 2) . ' made successfully.');
+        return redirect()
+            ->route('orders.index')
+            ->with('success', 'Partial payment of ' . config('settings.currency_symbol') . number_format($amount, 2) . ' recorded successfully.');
+    }
+
+    private function applyPaymentToOrderItems(Order $order, float $amount): void
+    {
+        $remaining = round($amount, 2);
+        $lastUpdatedItem = null;
+
+        $order->items->sortBy('id')->each(function ($item) use (&$remaining, &$lastUpdatedItem) {
+            if ($remaining <= 0) {
+                return false;
+            }
+
+            $itemTotal = ($item->price * $item->quantity) - ($item->discount ?? 0);
+            $alreadyPaid = (float) ($item->customer_pay_amount ?? 0);
+            $outstanding = round($itemTotal - $alreadyPaid, 2);
+
+            if ($outstanding <= 0) {
+                return true;
+            }
+
+            $applied = min($outstanding, $remaining);
+            $updatedPaid = round($alreadyPaid + $applied, 2);
+
+            $item->customer_pay_amount = $updatedPaid;
+            $item->balance_amount = round($updatedPaid - $itemTotal, 2);
+            $item->save();
+
+            $remaining = round($remaining - $applied, 2);
+            $lastUpdatedItem = $item;
+
+            return true;
+        });
+
+        if ($remaining > 0 && $lastUpdatedItem) {
+            $item = $lastUpdatedItem->fresh();
+            $itemTotal = ($item->price * $item->quantity) - ($item->discount ?? 0);
+            $item->customer_pay_amount = round(($item->customer_pay_amount ?? 0) + $remaining, 2);
+            $item->balance_amount = round($item->customer_pay_amount - $itemTotal, 2);
+            $item->save();
+        }
     }
 }
